@@ -1,4 +1,11 @@
-
+/**
+ * Recursively copies node data in preparation for code generation.
+ *
+ * Currently only filters whitespace-only JSXText
+ *
+ * @param node
+ * @return {*}
+ */
 function preprocess(node)
 {
     if (!node)
