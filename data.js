@@ -10,10 +10,10 @@ const DataStore = {
         return dataStore;
     },
 
-    entry: function (path) {
+    entry: function (path, create) {
 
         let obj = dataStore[path];
-        if (!obj)
+        if (!obj && create)
         {
             obj = {
                 importDeclarations: []

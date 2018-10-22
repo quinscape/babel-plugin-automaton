@@ -410,7 +410,7 @@ module.exports = function (babel) {
 
                     //console.log("IMPORT", JSON.stringify(importDeclaration));
 
-                    Data.entry(relativePath).importDeclarations.push(
+                    Data.entry(relativePath, true).importDeclarations.push(
                         importDeclaration
                     );
                 }
@@ -434,12 +434,12 @@ module.exports = function (babel) {
 
                         if ( moduleName === name)
                         {
-                            Data.entry(relativePath).composite = createCompositeComponentDefinition(path);
+                            Data.entry(relativePath, true).composite = createCompositeComponentDefinition(path);
                         }
                     }
                     else  if (processName === moduleName)
                     {
-                        Data.entry(relativePath).processExports = {
+                        Data.entry(relativePath, true).processExports = {
                             
                         }
                     }

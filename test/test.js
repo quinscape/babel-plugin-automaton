@@ -33,59 +33,55 @@ function transform(relPath)
 }
 
 describe("Babel Automaton Plugin", function () {
-    beforeEach(function () {
-        Data.clear();
-    });
+
+    beforeEach(Data.clear);
 
     it("extracts simplified AST data from composite component sources", function () {
         transform("./test-modules/apps/test/composites/SimpleComposite.js");
 
-        const data = Data.get();
-
-        assert.deepEqual(data, {
-            "./apps/test/composites/SimpleComposite": {
-                "importDeclarations": [
-                    {
-                        "type": "ImportDeclaration",
-                        "source": "react",
-                        "specifiers": [
-                            {
-                                "type": "ImportDefaultSpecifier",
-                                "local": "React"
-                            }
-                        ]
-                    }
-                ],
-                "composite": {
-                    "type": "CompositeComponent",
-                    "constants": [],
-                    "root": {
-                        "type": "JSXElement",
-                        "name": "div",
-                        "attrs": [],
-                        "kids": [
-                            {
-                                "type": "JSXElement",
-                                "name": "h1",
-                                "attrs": [
-                                    {
-                                        "type": "JSXAttribute",
-                                        "name": "className",
-                                        "value": {
-                                            "type": "Expression",
-                                            "code": "\"test-class\""
-                                        }
+        assert.deepEqual(
+            Data.entry("./apps/test/composites/SimpleComposite"), {
+            "importDeclarations": [
+                {
+                    "type": "ImportDeclaration",
+                    "source": "react",
+                    "specifiers": [
+                        {
+                            "type": "ImportDefaultSpecifier",
+                            "local": "React"
+                        }
+                    ]
+                }
+            ],
+            "composite": {
+                "type": "CompositeComponent",
+                "constants": [],
+                "root": {
+                    "type": "JSXElement",
+                    "name": "div",
+                    "attrs": [],
+                    "kids": [
+                        {
+                            "type": "JSXElement",
+                            "name": "h1",
+                            "attrs": [
+                                {
+                                    "type": "JSXAttribute",
+                                    "name": "className",
+                                    "value": {
+                                        "type": "Expression",
+                                        "code": "\"test-class\""
                                     }
-                                ],
-                                "kids": [
-                                    {
-                                        "type": "JSXText",
-                                        "value": "SimpleComposite"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
+                                }
+                            ],
+                            "kids": [
+                                {
+                                    "type": "JSXText",
+                                    "value": "SimpleComposite"
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         })
@@ -96,12 +92,11 @@ describe("Babel Automaton Plugin", function () {
         // also contains multi-level object patterns
 
         transform("./test-modules/apps/test/composites/RenderFunctionChild.js");
-        const data = Data.get();
 
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
-            data["./apps/test/composites/RenderFunctionChild"],
+            Data.entry("./apps/test/composites/RenderFunctionChild"),
             {
                 "importDeclarations": [
                     {
@@ -207,12 +202,11 @@ describe("Babel Automaton Plugin", function () {
         // also contains multi-level object patterns
 
         transform("./test-modules/apps/test/composites/BodylessRenderFunctionChild.js");
-        const data = Data.get();
 
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
-            data["./apps/test/composites/BodylessRenderFunctionChild"],
+            Data.entry("./apps/test/composites/BodylessRenderFunctionChild"),
             {
                 "importDeclarations": [
                     {
@@ -305,12 +299,11 @@ describe("Babel Automaton Plugin", function () {
     it("extracts render function attributes from React children", function () {
 
         transform("./test-modules/apps/test/composites/RenderFunctionAttr.js");
-        const data = Data.get();
 
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
-            data["./apps/test/composites/RenderFunctionAttr"],
+            Data.entry("./apps/test/composites/RenderFunctionAttr"),
             {
                 "importDeclarations": [
                     {
@@ -412,8 +405,7 @@ describe("Babel Automaton Plugin", function () {
         transform("./test-modules/apps/test/test.js");
         const data = Data.get();
 
-
-        console.log(JSON.stringify(data,0, 4))
+        //console.log(JSON.stringify(data,0, 4))
 
     });
 });
