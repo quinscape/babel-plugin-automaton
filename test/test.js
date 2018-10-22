@@ -27,9 +27,18 @@ const OPTIONS = {
 
 function transform(relPath)
 {
-    return babel.transform(fs.readFileSync(path.join(__dirname, relPath)), Object.assign({}, OPTIONS, {
-        filename: relPath
-    }));
+    return babel.transform(
+        fs.readFileSync(
+            path.join(__dirname, relPath)
+        ),
+        Object.assign(
+            {},
+            OPTIONS,
+            {
+                filename: relPath
+            }
+        )
+    );
 }
 
 describe("Babel Automaton Plugin", function () {
@@ -37,10 +46,10 @@ describe("Babel Automaton Plugin", function () {
     beforeEach(Data.clear);
 
     it("extracts simplified AST data from composite component sources", function () {
-        transform("./test-modules/apps/test/composites/SimpleComposite.js");
+        transform("./test-modules/apps/test/processes/test/composites/SimpleComposite.js");
 
         assert.deepEqual(
-            Data.entry("./apps/test/composites/SimpleComposite"), {
+            Data.entry("./apps/test/processes/test/composites/SimpleComposite"), {
             "importDeclarations": [
                 {
                     "type": "ImportDeclaration",
@@ -91,12 +100,12 @@ describe("Babel Automaton Plugin", function () {
     it("extracts render functions from React children", function () {
         // also contains multi-level object patterns
 
-        transform("./test-modules/apps/test/composites/RenderFunctionChild.js");
+        transform("./test-modules/apps/test/processes/test/composites/RenderFunctionChild.js");
 
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
-            Data.entry("./apps/test/composites/RenderFunctionChild"),
+            Data.entry("./apps/test/processes/test/composites/RenderFunctionChild"),
             {
                 "importDeclarations": [
                     {
@@ -201,12 +210,12 @@ describe("Babel Automaton Plugin", function () {
     it("extracts bodyless render functions from React children", function () {
         // also contains multi-level object patterns
 
-        transform("./test-modules/apps/test/composites/BodylessRenderFunctionChild.js");
+        transform("./test-modules/apps/test/processes/test/composites/BodylessRenderFunctionChild.js");
 
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
-            Data.entry("./apps/test/composites/BodylessRenderFunctionChild"),
+            Data.entry("./apps/test/processes/test/composites/BodylessRenderFunctionChild"),
             {
                 "importDeclarations": [
                     {
@@ -298,12 +307,12 @@ describe("Babel Automaton Plugin", function () {
 
     it("extracts render function attributes from React children", function () {
 
-        transform("./test-modules/apps/test/composites/RenderFunctionAttr.js");
+        transform("./test-modules/apps/test/processes/test/composites/RenderFunctionAttr.js");
 
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
-            Data.entry("./apps/test/composites/RenderFunctionAttr"),
+            Data.entry("./apps/test/processes/test/composites/RenderFunctionAttr"),
             {
                 "importDeclarations": [
                     {
@@ -402,10 +411,10 @@ describe("Babel Automaton Plugin", function () {
 
     it("extracts process definitions", function () {
 
-        transform("./test-modules/apps/test/test.js");
-        const data = Data.get();
+        transform("./test-modules/apps/test/processes/test/test.js");
+        const data = Data.entry("./apps/test/processes/test/test");
 
-        //console.log(JSON.stringify(data,0, 4))
+        console.log(JSON.stringify(data,0, 4))
 
     });
 });

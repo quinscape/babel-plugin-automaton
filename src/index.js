@@ -11,110 +11,139 @@ const { preprocess, isRedundantJSXText } = require("./preprocess");
 
 //var dump = require("./dump");
 
+
+const JS_EXTENSION = ".js";
+
+const NO_MATCH = {
+    appName : null,
+    processName : null,
+    moduleName : null,
+    isComposite : null
+};
+
+const PROCESS_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/processes\/(.*?)\/(composites\/)?(.*?)$/;
+
+function matchPath(path)
+{
+    const m = PROCESS_RESOURCE_REGEX.exec(path);
+    if (!m)
+    {
+        return NO_MATCH;
+    }
+
+    return {
+        appName: m[1],
+        processName: m[2],
+        moduleName: m[4],
+        isComposite: !!m[3]
+    }
+}
+
+function strip(path, sourceRoot)
+{
+    if (sourceRoot)
+    {
+        if (path.indexOf(sourceRoot) !== 0)
+        {
+            return null;
+        }
+
+        return path.substring(sourceRoot.length);
+    }
+    return path;
+
+}
+
+function ensureDefined(info, value)
+{
+    if (value === undefined)
+    {
+        throw new Error(info + " is undefined");
+    }
+
+    return value;
+}
+
+/**
+ * Takes the "name" property of the given node
+ */
+function TakeName(node)
+{
+    return ensureDefined(node.type + ".name", node.name);
+}
+
+/**
+ * Takes the "value" property of the given node
+ */
+function TakeValue(node)
+{
+    return ensureDefined(node.type + ".value", node.value);
+}
+
+/**
+ * Takes the complete source of the node
+ */
+function TakeSource(node)
+{
+    if (node === null)
+    {
+        return null;
+    }
+
+    const preprocessed = preprocess(node);
+    if (!preprocessed)
+    {
+        return "";
+    }
+
+    //console.log("preprocessed", JSON.stringify(preprocessed,0,4));
+
+    return generateSource( preprocessed, SOURCE_OPTIONS).code;
+}
+
+function getRelativeModuleName(opts)
+{
+    const root = opts.sourceRoot;
+    if (!root)
+    {
+        return null;
+    }
+    const len = root.length;
+    const fullWithExtension = opts.filename.substring(root[len - 1] === nodeJsPath.sep ? len : len + 1);
+
+    return fullWithExtension.substring(0, fullWithExtension.lastIndexOf("."));
+}
+
+const SOURCE_OPTIONS = {
+    quotes: "double",
+    concise: true
+};
+
+function getRelativeModulePath(path, pluginOpts)
+{
+    const module = getRelativeModuleName(path.hub.file.opts);
+    if (!module)
+    {
+        return null;
+    }
+
+    const relative = strip(module, pluginOpts.sourceRoot);
+    if (!relative)
+    {
+        return null;
+    }
+
+    return "./" + relative;
+}
+
+function getNameOrValue(node)
+{
+    return node.name || node.value;
+}
+
 module.exports = function (babel) {
 
     const t = babel.types;
-    function strip(path, sourceRoot)
-    {
-        if (sourceRoot)
-        {
-            if (path.indexOf(sourceRoot) !== 0)
-            {
-                return null;
-            }
-
-            return path.substring(sourceRoot.length);
-        }
-        return path;
-
-    }
-
-    function ensureDefined(info, value)
-    {
-        if (value === undefined)
-        {
-            throw new Error(info + " is undefined");
-        }
-
-        return value;
-    }
-
-    /**
-     * Takes the "name" property of the given node
-     */
-    function TakeName(node)
-    {
-        return ensureDefined(node.type + ".name", node.name);
-    }
-
-    /**
-     * Takes the "value" property of the given node
-     */
-    function TakeValue(node)
-    {
-        return ensureDefined(node.type + ".value", node.value);
-    }
-
-    /**
-     * Takes the complete source of the node
-     */
-    function TakeSource(node)
-    {
-        if (node === null)
-        {
-            return null;
-        }
-
-        const preprocessed = preprocess(node);
-        if (!preprocessed)
-        {
-            return "";
-        }
-
-        //console.log("preprocessed", JSON.stringify(preprocessed,0,4));
-
-        return generateSource( preprocessed, SOURCE_OPTIONS).code;
-    }
-
-    function getRelativeModuleName(opts)
-    {
-        const root = opts.sourceRoot;
-        if (!root)
-        {
-            return null;
-        }
-        const len = root.length;
-        const fullWithExtension = opts.filename.substring(root[len - 1] === nodeJsPath.sep ? len : len + 1);
-
-        return fullWithExtension.substring(0, fullWithExtension.lastIndexOf("."));
-    }
-
-    const SOURCE_OPTIONS = {
-        quotes: "double",
-        concise: true
-    };
-
-    function getRelativeModulePath(path, pluginOpts)
-    {
-        const module = getRelativeModuleName(path.hub.file.opts);
-        if (!module)
-        {
-            return null;
-        }
-
-        const relative = strip(module, pluginOpts.sourceRoot);
-        if (!relative)
-        {
-            return null;
-        }
-
-        return "./" + relative;
-    }
-
-    function getNameOrValue(node)
-    {
-        return node.name || node.value;
-    }
 
     function recursiveIdentifierOrPatternRule(node)
     {
@@ -334,8 +363,15 @@ module.exports = function (babel) {
         path.traverse({
             "ClassMethod": function (path, state) {
                 const {node} = path;
-                if (node.kind === "method" && getNameOrValue(node.key) === "render")
+                if (node.kind === "method")
                 {
+
+                    const methodName = getNameOrValue(node.key);
+                    if (methodName !== "render")
+                    {
+                        throw new Error("Composite components should only contain a render method: Found '" + methodName + "' in " + path + JS_EXTENSION);
+                    }
+
                     // shallow traversal over render body only
                     const {body} = node;
 
@@ -374,6 +410,133 @@ module.exports = function (babel) {
         });
 
         return classDeclaration;
+    }
+
+    function transformDecorators(decorators)
+    {
+        return transform(decorators, function(decorator){
+
+            const { expression } = decorator;
+
+            if (t.isCallExpression(expression))
+            {
+                return {
+                    name: expression.callee.name,
+                    arguments: transform(expression.arguments, TakeSource)
+                };
+            }
+
+            return {
+                name: expression
+            }
+        });
+    }
+
+    function findDecorator(decorators, name)
+    {
+        for (let i = 0; i < decorators.length; i++)
+        {
+            const decorator = decorators[i];
+            if (decorator.name === name)
+            {
+                return decorator;
+            }
+
+        }
+        return null;
+    }
+
+    function createProcessExports(path)
+    {
+        const processExports = {
+            type: "ProcessExports",
+            config: [],
+            states: null,
+            scope: {
+                name: null,
+                observables: [],
+                actions: [],
+                computeds: [],
+                helpers: []
+            }
+        };
+
+
+        //console.log("CLASS", JSON.stringify(processExports));
+
+        path.traverse({
+
+            "ExportNamedDeclaration": function (path, state) {
+                const {node} = path;
+                const {declarations} = node.declaration;
+
+                for (let i = 0; i < declarations.length; i++)
+                {
+                    const decl = declarations[i];
+                    if (t.isIdentifier(decl) && dec.name === "initProcess")
+                    {
+
+                    }
+                }
+            },
+
+            "ExportDefaultDeclaration" : function (path, state) {
+                const { declaration } = node;
+
+                if (!t.isClassDeclaration(declaration))
+                {
+                    throw new Error("Default process export must be scope class")
+                }
+
+                const { scope } = processExports;
+
+                scope.name = declaration.id.name;
+
+                // shallow traversal over class body only
+                const { body } = declaration.body;
+
+                for (let i = 0; i < body.length; i++)
+                {
+                    const kid = body[i];
+
+                    if (t.isClassProperty(kid))
+                    {
+                        const decorators = transformDecorators(kid.decorators)
+
+                        if (findDecorator(decorators, "observable"))
+                        {
+                            scope.observables.push({
+                                name: kid.key.name,
+                                value: Take
+                            })
+                        }
+                    }
+                    else if (t.isClassMethod(kid))
+                    {
+
+                        if (findDecorator(decorators, "action"))
+                        {
+                            scope.actions.push({
+
+                            })
+                        }
+                        else if (findDecorator(decorators, "computed"))
+                        {
+                            scope.computeds.push({
+
+                            })
+                        }
+                        else
+                        {
+                            helpers.push(TakeSource(kid));
+                        }
+                    }
+                }
+            }
+        });
+
+        return processExports;
+
     }
 
     return {
@@ -421,13 +584,12 @@ module.exports = function (babel) {
                 const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
 
-                const m = /^\.\/apps\/(.*?)\/(composites\/)?(.*?)$/.exec(relativePath);
-                if (m)
-                {
-                    const processName = m[1];
-                    const moduleName = m[3];
-                    const isComposite = !!m[2];
+                const { appName, processName, moduleName, isComposite } = matchPath(relativePath);
 
+                console.log({ appName, processName, moduleName, isComposite });
+
+                if (processName)
+                {
                     if (isComposite)
                     {
                         const { name } = node.id;
@@ -439,9 +601,7 @@ module.exports = function (babel) {
                     }
                     else  if (processName === moduleName)
                     {
-                        Data.entry(relativePath, true).processExports = {
-                            
-                        }
+                        Data.entry(relativePath, true).processExports = createProcessExports(path)
                     }
                 }
             }

@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="027fcbec-6b42-4be9-b721-876c62f114da" name="Default Changelist" comment="" />
+    <list default="true" id="027fcbec-6b42-4be9-b721-876c62f114da" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test-modules/apps/test/composites/BodylessRenderFunctionChild.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/BodylessRenderFunctionChild.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test-modules/apps/test/composites/RenderFunctionAttr.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/RenderFunctionAttr.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test-modules/apps/test/composites/RenderFunctionChild.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/RenderFunctionChild.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test-modules/apps/test/composites/SimpleComposite.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/SimpleComposite.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test-modules/apps/test/test.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/test-modules/apps/test/processes/test/test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.js" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,9 +21,9 @@
     <session id="-848377933">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
-          <entry key="project.open.time.0" value="3" />
-          <entry key="project.opened" value="3" />
+          <entry key="project.closed" value="3" />
+          <entry key="project.open.time.0" value="4" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -33,14 +42,14 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="babelrc" value="14" />
-          <entry key="js" value="14387" />
+          <entry key="js" value="16266" />
           <entry key="json" value="14" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JSON" value="28" />
-          <entry key="JavaScript" value="14387" />
+          <entry key="JavaScript" value="16266" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -54,25 +63,21 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="386">
-              <caret line="444" column="28" lean-forward="true" selection-start-line="444" selection-start-column="28" selection-end-line="444" selection-end-column="28" />
+            <state relative-caret-position="450">
+              <caret line="527" column="35" selection-start-line="527" selection-start-column="35" selection-end-line="527" selection-end-column="35" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/preprocess.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-458">
-              <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
-            </state>
-          </provider>
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/node_modules/babel-generator/lib/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
+            <state relative-caret-position="270">
               <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
             </state>
           </provider>
@@ -81,8 +86,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="18" column="38" lean-forward="true" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
+            <state relative-caret-position="450">
+              <caret line="30" selection-start-line="30" selection-end-line="30" />
             </state>
           </provider>
         </entry>
@@ -90,23 +95,23 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/test.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="427">
-              <caret line="414" column="12" lean-forward="true" selection-start-line="414" selection-start-column="12" selection-end-line="414" selection-end-column="12" />
+            <state relative-caret-position="352">
+              <caret line="411" column="7" selection-start-line="411" selection-start-column="7" selection-end-line="411" selection-end-column="7" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/test.js">
+        <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/test.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="727">
-              <caret line="52" column="25" selection-start-line="52" selection-start-column="25" selection-end-line="52" selection-end-column="25" />
+            <state relative-caret-position="97">
+              <caret line="52" column="30" selection-end-line="78" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composites/RenderFunctionAttr.js">
+        <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/RenderFunctionAttr.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="270">
               <caret line="18" column="58" selection-start-line="18" selection-start-column="58" selection-end-line="18" selection-end-column="67" />
@@ -115,7 +120,7 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composites/BodylessRenderFunctionChild.js">
+        <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/BodylessRenderFunctionChild.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
               <caret line="5" column="33" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="33" />
@@ -124,7 +129,7 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composites/RenderFunctionChild.js">
+        <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/RenderFunctionChild.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
               <caret line="4" column="25" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="25" />
@@ -135,8 +140,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/transform.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="136" column="21" selection-start-line="136" selection-start-column="21" selection-end-line="136" selection-end-column="21" />
+            <state relative-caret-position="1140">
+              <caret line="76" selection-start-line="76" selection-end-line="76" />
             </state>
           </provider>
         </entry>
@@ -152,13 +157,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>recursivePatternSwitch</find>
-      <find>Column</find>
-      <find>isRenderFunction</find>
-      <find>var</find>
-      <find>sourceRoot</find>
-      <find>nameW</find>
-      <find>rela</find>
       <find>getRelativeModulePath</find>
       <find>classDe</find>
       <find>switches</find>
@@ -168,7 +166,6 @@
       <find>JSXT</find>
       <find>preprocess</find>
       <find>console</find>
-      <find>console.log</find>
       <find>JSXRenderFunction</find>
       <find>handler</find>
       <find>handleRenderFunction</find>
@@ -182,12 +179,21 @@
       <find>console.log(JSON.stringify(data,0, 4))</find>
       <find>test/composite</find>
       <find>classDeclaration</find>
+      <find>recurs</find>
+      <find>recursiveJSX</find>
+      <find>console.log</find>
+      <find>Swit</find>
+      <find>Data.entry</find>
+      <find>const data</find>
+      <find>apps/test/composites</find>
+      <find>PROCESS_RESOURCE_REGEX</find>
     </findStrings>
     <replaceStrings>
       <replace>const</replace>
       <replace>Switch()es</replace>
-      <replace>test/composites</replace>
       <replace>RenderFunctionAttr</replace>
+      <replace>test/composites</replace>
+      <replace>apps/test/processes/test/composites</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -205,13 +211,13 @@
         <option value="$PROJECT_DIR$/test/test-modules/apps/test/composite.js" />
         <option value="$PROJECT_DIR$/test/transform.js" />
         <option value="$PROJECT_DIR$/test/test-modules/apps/test/composite/SimpleComposite.js" />
-        <option value="$PROJECT_DIR$/src/preprocess.js" />
         <option value="$PROJECT_DIR$/src/transform.js" />
         <option value="$PROJECT_DIR$/test/test-modules/apps/test/composite/RenderPropChild.js" />
         <option value="$PROJECT_DIR$/test/test-modules/apps/test/composite/RenderPropChild2.js" />
         <option value="$PROJECT_DIR$/test/test-modules/apps/test/composite/RenderFunctionAttr.js" />
-        <option value="$PROJECT_DIR$/test/test-modules/apps/test/test.js" />
+        <option value="$PROJECT_DIR$/src/preprocess.js" />
         <option value="$PROJECT_DIR$/data.js" />
+        <option value="$PROJECT_DIR$/test/test-modules/apps/test/test.js" />
         <option value="$PROJECT_DIR$/test/test.js" />
         <option value="$PROJECT_DIR$/src/index.js" />
       </list>
@@ -250,7 +256,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -297,7 +302,17 @@
               <item name="test-modules" type="462c0819:PsiDirectoryNode" />
               <item name="apps" type="462c0819:PsiDirectoryNode" />
               <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="composites" type="462c0819:PsiDirectoryNode" />
+              <item name="processes" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="babel-plugin-automaton" type="b2602c69:ProjectViewProjectNode" />
+              <item name="babel-plugin-automaton" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="test-modules" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="processes" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="babel-plugin-automaton" type="b2602c69:ProjectViewProjectNode" />
@@ -308,6 +323,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -332,10 +348,11 @@
     <property name="settings.editor.selected.configurable" value="Settings.JavaScript" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/test/test-modules/apps/test/processes/test" />
       <recent name="$PROJECT_DIR$/test/test-modules/apps/test/composite" />
     </key>
-    <key name="MoveFile.RECENT_KEYS">
+    <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/test/test-modules/apps/test/composite" />
     </key>
   </component>
@@ -441,7 +458,7 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="Plugin Tests" type="mocha-javascript-test-runner" factoryName="Mocha">
+    <configuration name="Babylon Automaton Tests" type="mocha-javascript-test-runner" factoryName="Mocha">
       <node-interpreter>project</node-interpreter>
       <node-options />
       <working-directory>$PROJECT_DIR$</working-directory>
@@ -495,7 +512,7 @@
     </configuration>
     <list>
       <item itemvalue="Mocha.Transform" />
-      <item itemvalue="Mocha.Plugin Tests" />
+      <item itemvalue="Mocha.Babylon Automaton Tests" />
       <item itemvalue="Mocha.Transform.switches based on type properties" />
       <item itemvalue="Mocha.Transform.does not abide by falsy rules" />
       <item itemvalue="Mocha.Babel Automaton Plugin.extracts render functions from React children" />
@@ -524,55 +541,55 @@
       <updated>1539901124220</updated>
       <workItem from="1539901125599" duration="4822000" />
       <workItem from="1539950776285" duration="25675000" />
-      <workItem from="1540064886515" duration="21331000" />
+      <workItem from="1540064886515" duration="26413000" />
+      <workItem from="1540199275209" duration="6018000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Plugin_Tests - 2018.10.21 at 20h 12m 07s.xml">
-      <configuration name="Plugin Tests" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="Babylon_Automaton_Tests - 2018.10.22 at 12h 44m 38s.xml">
+      <configuration name="Babylon Automaton Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Plugin_Tests - 2018.10.21 at 20h 12m 37s.xml">
-      <configuration name="Plugin Tests" configurationId="mocha-javascript-test-runner" />
+    <history-entry file="Babylon_Automaton_Tests - 2018.10.22 at 12h 46m 48s.xml">
+      <configuration name="Babylon Automaton Tests" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Plugin_Tests - 2018.10.21 at 20h 12m 40s.xml">
-      <configuration name="Plugin Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="Plugin_Tests - 2018.10.21 at 20h 13m 12s.xml">
-      <configuration name="Plugin Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="Plugin_Tests - 2018.10.21 at 20h 13m 56s.xml">
-      <configuration name="Plugin Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="Plugin_Tests - 2018.10.21 at 20h 14m 56s.xml">
-      <configuration name="Plugin Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="Plugin_Tests - 2018.10.21 at 20h 16m 03s.xml">
-      <configuration name="Plugin Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="Plugin_Tests - 2018.10.21 at 20h 16m 06s.xml">
-      <configuration name="Plugin Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.21 at 20h 16m 15s.xml">
+    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.22 at 12h 53m 42s.xml">
       <configuration name="Babel Automaton Plugin.extracts process definitions" configurationId="mocha-javascript-test-runner" />
     </history-entry>
-    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.21 at 20h 16m 38s.xml">
+    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.22 at 12h 54m 03s.xml">
+      <configuration name="Babel Automaton Plugin.extracts process definitions" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.22 at 12h 54m 13s.xml">
+      <configuration name="Babel Automaton Plugin.extracts process definitions" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.22 at 12h 55m 25s.xml">
+      <configuration name="Babel Automaton Plugin.extracts process definitions" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.22 at 12h 56m 02s.xml">
+      <configuration name="Babel Automaton Plugin.extracts process definitions" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.22 at 12h 56m 28s.xml">
+      <configuration name="Babel Automaton Plugin.extracts process definitions" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Babylon_Automaton_Tests - 2018.10.22 at 12h 58m 01s.xml">
+      <configuration name="Babylon Automaton Tests" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Babel_Automaton_Plugin_extracts_process_definitions - 2018.10.22 at 12h 58m 06s.xml">
       <configuration name="Babel Automaton Plugin.extracts process definitions" configurationId="mocha-javascript-test-runner" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51828000" />
+    <option name="totallyTimeSpent" value="62928000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1920" height="1055" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2550586" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25772098" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
       <window_info id="Favorites" order="4" side_tool="true" />
-      <window_info anchor="bottom" id="GraphQL" weight="0.3290461" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3290461" />
@@ -584,6 +601,7 @@
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="GraphQL" order="11" weight="0.3290461" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -606,13 +624,11 @@
           <condition expression="!ast" language="JavaScript" />
           <url>file://$PROJECT_DIR$/node_modules/babel-generator/lib/index.js</url>
           <line>50</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/index.js</url>
-          <line>430</line>
-          <properties lambdaOrdinal="-1" />
+          <line>589</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
@@ -643,13 +659,7 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/test.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="1873" column="72" lean-forward="true" selection-start-line="1873" selection-start-column="72" selection-end-line="1919" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/test.json" />
     <entry file="file://$PROJECT_DIR$/webpack/AutomatonPlugin.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -657,9 +667,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composite.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composite.js" />
     <entry file="file://$PROJECT_DIR$/test/transform.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -667,7 +675,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composites/SimpleComposite.js">
+    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/SimpleComposite.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="9" column="18" lean-forward="true" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
@@ -688,73 +696,69 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/preprocess.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/babel-generator/lib/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
+        <state relative-caret-position="270">
           <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/preprocess.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-458">
-          <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/transform.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="136" column="21" selection-start-line="136" selection-start-column="21" selection-end-line="136" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composites/RenderFunctionChild.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="25" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composites/BodylessRenderFunctionChild.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="33" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/composites/RenderFunctionAttr.js">
+    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/RenderFunctionAttr.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="18" column="58" selection-start-line="18" selection-start-column="58" selection-end-line="18" selection-end-column="67" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/test.js">
+    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/BodylessRenderFunctionChild.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="727">
-          <caret line="52" column="25" selection-start-line="52" selection-start-column="25" selection-end-line="52" selection-end-column="25" />
+        <state relative-caret-position="75">
+          <caret line="5" column="33" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/composites/RenderFunctionChild.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="25" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/transform.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1140">
+          <caret line="76" selection-start-line="76" selection-end-line="76" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/data.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="38" lean-forward="true" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
+        <state relative-caret-position="450">
+          <caret line="30" selection-start-line="30" selection-end-line="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test-modules/apps/test/processes/test/test.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="97">
+          <caret line="52" column="30" selection-end-line="78" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/test.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="414" column="12" lean-forward="true" selection-start-line="414" selection-start-column="12" selection-end-line="414" selection-end-column="12" />
+        <state relative-caret-position="352">
+          <caret line="411" column="7" selection-start-line="411" selection-start-column="7" selection-end-line="411" selection-end-column="7" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="386">
-          <caret line="444" column="28" lean-forward="true" selection-start-line="444" selection-start-column="28" selection-end-line="444" selection-end-column="28" />
+        <state relative-caret-position="450">
+          <caret line="527" column="35" selection-start-line="527" selection-start-column="35" selection-end-line="527" selection-end-column="35" />
         </state>
       </provider>
     </entry>

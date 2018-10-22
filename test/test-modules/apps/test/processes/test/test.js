@@ -50,7 +50,7 @@ export const initProcess = (process, scope) => {
     );
 };
 
-export default class test {
+export default class TestScope {
 
     @observable currentObject = null;
 
