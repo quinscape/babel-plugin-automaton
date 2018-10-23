@@ -544,7 +544,7 @@ module.exports = function (babel) {
     return {
         visitor: {
             "ImportDeclaration": function (path, state) {
-                const {node} = path;
+                const { node } = path;
                 const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
 
@@ -557,18 +557,37 @@ module.exports = function (babel) {
                             type: "ImportDeclaration",
                             source: TakeValue,
                             specifiers: Switch({
-                                "ImportSpecifier": {
-                                    imported: TakeName,
-                                    local: TakeName
+                                "ImportSpecifier": function(node)
+                                {
+                                    const result = {
+                                        type: "ImportSpecifier",
+                                        name: TakeName(node.local)
+                                    };
+
+                                    const imported = TakeName(node.imported);
+
+                                    if (result.name !== imported)
+                                    {
+                                        result.aliasOf = imported;
+                                    }
+                                    return result
                                 },
 
-                                "ImportDefaultSpecifier": {
-                                    local: TakeName
+                                "ImportDefaultSpecifier": function(node)
+                                {
+                                    return {
+                                        type: "ImportDefaultSpecifier",
+                                        name: TakeName(node.local)
+                                    }
                                 },
 
-                                "ImportNamespaceSpecifier": {
-                                    local: TakeName
-                                }
+                                "ImportNamespaceSpecifier": function(node)
+                                {
+                                    return {
+                                        type: "ImportNamespaceSpecifier",
+                                        name: TakeName(node.local)
+                                    }
+                                },
                             })
                         }
                     );

@@ -57,7 +57,7 @@ describe("Babel Automaton Plugin", function () {
                     "specifiers": [
                         {
                             "type": "ImportDefaultSpecifier",
-                            "local": "React"
+                            "name": "React"
                         }
                     ]
                 }
@@ -114,7 +114,7 @@ describe("Babel Automaton Plugin", function () {
                         "specifiers": [
                             {
                                 "type": "ImportDefaultSpecifier",
-                                "local": "React"
+                                "name": "React"
                             }
                         ]
                     },
@@ -124,8 +124,7 @@ describe("Babel Automaton Plugin", function () {
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "imported": "Widget",
-                                "local": "Widget"
+                                "name": "Widget"
                             }
                         ]
                     }
@@ -233,7 +232,7 @@ describe("Babel Automaton Plugin", function () {
                         "specifiers": [
                             {
                                 "type": "ImportDefaultSpecifier",
-                                "local": "React"
+                                "name": "React"
                             }
                         ]
                     },
@@ -243,8 +242,7 @@ describe("Babel Automaton Plugin", function () {
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "imported": "Widget",
-                                "local": "Widget"
+                                "name": "Widget"
                             }
                         ]
                     }
@@ -336,7 +334,7 @@ describe("Babel Automaton Plugin", function () {
                         "specifiers": [
                             {
                                 "type": "ImportDefaultSpecifier",
-                                "local": "React"
+                                "name": "React"
                             }
                         ]
                     },
@@ -346,8 +344,7 @@ describe("Babel Automaton Plugin", function () {
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "imported": "i18n",
-                                "local": "i18n"
+                                "name": "i18n"
                             }
                         ]
                     },
@@ -357,13 +354,12 @@ describe("Babel Automaton Plugin", function () {
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "imported": "Widget",
-                                "local": "Widget"
+                                "aliasOf": "Widget",
+                                "name": "RenamedWidget"
                             },
                             {
                                 "type": "ImportSpecifier",
-                                "imported": "Button",
-                                "local": "Button"
+                                "name": "Button"
                             }
                         ]
                     }
@@ -372,7 +368,7 @@ describe("Babel Automaton Plugin", function () {
                     "type": "CompositeComponent",
                     "constants": [],
                     "root": {
-                        "name": "Widget",
+                        "name": "RenamedWidget",
                         "attrs": [
                             {
                                 "type": "JSXAttribute",

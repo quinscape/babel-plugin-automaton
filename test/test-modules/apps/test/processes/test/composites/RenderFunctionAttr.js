@@ -1,7 +1,7 @@
 // noinspection NpmUsedModulesInstalled
 import React from "react"
 import { i18n } from "automaton-js"
-import { Widget, Button } from "../../components/ui"
+import { Widget as RenamedWidget, Button } from "../../components/ui"
 
 
 class RenderFunctionAttr extends React.Component {
@@ -9,7 +9,7 @@ class RenderFunctionAttr extends React.Component {
     render()
     {
         return (
-            <Widget
+            <RenamedWidget
                 toolbar={
                     context => {
                         return (
@@ -23,7 +23,7 @@ class RenderFunctionAttr extends React.Component {
                     }
                 }
             >
-            </Widget>
+            </RenamedWidget>
         )
     }
 }
