@@ -915,6 +915,21 @@ module.exports = function (babel) {
                 }
             },
 
+            "ExportDefaultDeclaration" : function (path, state) {
+                const { node } = path;
+                const pluginOpts = state.opts;
+                const relativePath = getRelativeModulePath(path, pluginOpts);
+
+                const { appName, processName, moduleName, isComposite } = matchPath(relativePath);
+
+                //console.log({ appName, processName, moduleName, isComposite });
+
+                if (processName && isComposite)
+                {
+                    Data.entry(relativePath, true).export = TakeSource(node.declaration);
+                }
+            },
+
             "Program": function (path, state) {
                 const { node } = path;
                 const pluginOpts = state.opts;

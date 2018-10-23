@@ -92,7 +92,8 @@ describe("Babel Automaton Plugin", function () {
                         }
                     ]
                 }
-            }
+            },
+            "export": "SimpleComposite"
         })
 
     });
@@ -208,7 +209,9 @@ describe("Babel Automaton Plugin", function () {
                         ],
                         "type": "JSXElement"
                     }
-                }
+
+                },
+                "export": "RenderFunctionChild"
             }
         )
 
@@ -311,7 +314,8 @@ describe("Babel Automaton Plugin", function () {
                         ],
                         "type": "JSXElement"
                     }
-                }
+                },
+                "export": "BodylessRenderFunctionChild"
             }
         )
 
@@ -418,7 +422,8 @@ describe("Babel Automaton Plugin", function () {
                         "kids": [],
                         "type": "JSXElement"
                     }
-                }
+                },
+                "export": "RenderFunctionAttr"
             }
         )
     });
@@ -550,6 +555,114 @@ describe("Babel Automaton Plugin", function () {
                         ]
                     }
                 }
+            }
+        )
+
+    });
+
+    it("extracts exported HOC invocations", function () {
+
+        transform("./test-modules/apps/test/processes/test/composites/FormComposite.js");
+
+        const data = Data.entry("./apps/test/processes/test/composites/FormComposite");
+        console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "react",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "React"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "classnames",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "cx"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "domainql-form/lib/Field",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "Field"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "domainql-form/lib/TextArea",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "TextArea"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "domainql-form/lib/withForm",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "withForm"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "domainql-form/lib/GlobalErrors",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "GlobalErrors"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "../../components/Icon",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "Icon"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "../../services/config",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "config"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "../../util/hasRole",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "hasRole"
+                            }
+                        ]
+                    }
+                ],
+                "export": "withForm(FooForm, { type: \"FooInput\" })"
             }
         )
 
