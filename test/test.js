@@ -430,5 +430,128 @@ describe("Babel Automaton Plugin", function () {
 
         //console.log(JSON.stringify(data,0, 4))
 
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observable"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "computed"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "action"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "../components/CustomLayout",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "CustomLayout"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "automaton-js",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "injection"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "type"
+                            }
+                        ]
+                    }
+                ],
+                "processExports": {
+                    "type": "ProcessExports",
+                    "configuration": [
+                        "/* process config /*\n",
+                        "process.layout = CustomLayout",
+                        "process.generalHelper(12)"
+                    ],
+                    "process": {
+                        "startState": "CustomerList",
+                        "states": {
+                            "CustomerList": {
+                                "to-detail": {
+                                    "to": "CustomerDetail",
+                                    "action": {
+                                        "type": "Action",
+                                        "params": [],
+                                        "code": "scope.addTodo()"
+                                    }
+                                }
+                            },
+                            "CustomerDetail": {
+                                "save": {
+                                    "to": "CustomerList",
+                                    "action": {
+                                        "type": "Action",
+                                        "params": [
+                                            "t"
+                                        ],
+                                        "code": "{ process.back(); }"
+                                    }
+                                },
+                                "cancel": {
+                                    "to": "CustomerList"
+                                }
+                            }
+                        }
+                    },
+                    "scope": {
+                        "name": "TestScope",
+                        "observables": [
+                            {
+                                "type": "PagedCustomer",
+                                "name": "customers",
+                                "defaultValue": "injection( // language=GraphQL\n`{\n                getCustomers{\n                    rows{\n                        id\n                        number\n                        salutation\n                        name\n                    }\n                }\n            }`)",
+                                "description": "Current customers"
+                            }
+                        ],
+                        "actions": [
+                            {
+                                "name": "updateCustomers",
+                                "params": [
+                                    "customers"
+                                ],
+                                "code": "this.customers = customers;"
+                            }
+                        ],
+                        "computeds": [
+                            {
+                                "name": "rowCount",
+                                "code": "return this.customers.rowCount;"
+                            }
+                        ],
+                        "helpers": [
+                            {
+                                "name": "generalHelper",
+                                "params": [
+                                    "foo"
+                                ],
+                                "code": "return foo + 1;"
+                            }
+                        ]
+                    }
+                }
+            }
+        )
+
     });
 });

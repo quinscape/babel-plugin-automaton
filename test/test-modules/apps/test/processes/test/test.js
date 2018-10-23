@@ -4,47 +4,41 @@ import {
     action
 } from "mobx";
 
-import MySpecialLayout from "./components/MySpecialLayout"
+import CustomLayout from "../components/CustomLayout"
 
-import { injection } from "automaton-js";
+import {
+    injection,
+    type
+} from "automaton-js";
 
 // noinspection JSUnusedGlobalSymbols
-export const initProcess = (process, scope) => {
-
+export function initProcess(process, scope)
+{
     // process config
-    process.layout = MySpecialLayout;
+    process.layout = CustomLayout;
+    process.generalHelper(12);
 
     // return process states and transitions
     return (
         {
             startState: "CustomerList",
             states: {
-                "CustomerList": [
-                    {
-                        to: "CustomerDetail",
-                        action: scope.addTodo
-                    }
-                ],
-                "TodoDetail": [
-                    {
-                        name: "to-detail",
-                        to: [ "TodoList" ],
-                        action: () => {
-
-
-                            todo.one();
-                            if (scope.flag)
-                            {
-                                process.transitionTo("C")
-                            }
+                "CustomerList": {
+                    "to-detail":
+                        {
+                            to: "CustomerDetail",
+                            action: scope.addTodo
                         }
+                },
+                "CustomerDetail": {
+                    "save" : {
+                        to: "CustomerList",
+                        action: t => { process.back() }
+                    },
+                    "cancel" : {
+                        to: "CustomerList"
                     }
-                ],
-                "C": [
-                    {
-                        to: "D"
-                    }
-                ]
+                }
             }
         }
     );
@@ -52,27 +46,38 @@ export const initProcess = (process, scope) => {
 
 export default class TestScope {
 
-    @observable currentObject = null;
-
-    /** {PagedTodo} Current todos */
+    /* Current customers */
+    @type("PagedCustomer")
     @observable customers = injection(
         // language=GraphQL
-        `{              
-            getCustomers{
-                rows{
-                    id
-                    number
-                    salutation
-                    name
+            `{
+                getCustomers{
+                    rows{
+                        id
+                        number
+                        salutation
+                        name
+                    }
                 }
-            }          
-        }`
+            }`
     );
 
-    // variante 2
     @action
     updateCustomers(customers)
     {
         this.customers = customers;
     }
+
+    @computed
+    get rowCount()
+    {
+        return this.customers.rowCount;
+    }
+
+    generalHelper(foo)
+    {
+        return foo + 1;
+    }
+
 }
+

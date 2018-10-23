@@ -1,7 +1,7 @@
 const nodeJsPath = require("path");
 const fs = require("fs");
 
-const {transform, Switch, Any} = require("./transform");
+const { transform, Switch, Any } = require("./transform");
 
 const Data = require("../data");
 
@@ -141,6 +141,19 @@ function getNameOrValue(node)
     return node.name || node.value;
 }
 
+function extractLeadingComments(node)
+{
+    const { leadingComments } = node;
+
+    return leadingComments ? transform(leadingComments, function (node) {
+
+        const value = TakeValue(node);
+
+        return value.replace(/^[ \r\t\n]*(.*?)[ \r\t\n]*$/, "$1")
+
+    }).join("\n") : null;
+}
+
 module.exports = function (babel) {
 
     const t = babel.types;
@@ -170,7 +183,7 @@ module.exports = function (babel) {
      */
     function isRenderFunction(node)
     {
-        const { params, body} = node;
+        const { params, body } = node;
 
         // not a render function if it is not a fat arrow or has no parameters
         if (!t.isArrowFunctionExpression(node) || !params.length)
@@ -205,9 +218,8 @@ module.exports = function (babel) {
 
         if ( isRenderResult )
         {
-            // type === "ArrowFunctionExpression"
             // shallow traversal over render function body only
-            const {body} = node;
+            const { body } = node;
 
             if (t.isBlockStatement(body))
             {
@@ -256,7 +268,7 @@ module.exports = function (babel) {
             Switch({
                 "JSXElement":
                     function (node) {
-                        const {openingElement} = node;
+                        const { openingElement } = node;
 
                         return {
                             name: TakeSource(openingElement.name),
@@ -302,7 +314,7 @@ module.exports = function (babel) {
                     },
                 "JSXText": function (node) {
 
-                    const {value} = node;
+                    const { value } = node;
                     if (!isRedundantJSXText(node))
                     {
                         return {
@@ -364,7 +376,7 @@ module.exports = function (babel) {
 
         path.traverse({
             "ClassMethod": function (path, state) {
-                const {node} = path;
+                const { node } = path;
                 if (node.kind === "method")
                 {
 
@@ -375,7 +387,7 @@ module.exports = function (babel) {
                     }
 
                     // shallow traversal over render body only
-                    const {body} = node;
+                    const { body } = node;
 
                     if (t.isBlockStatement(body))
                     {
@@ -416,6 +428,11 @@ module.exports = function (babel) {
 
     function transformDecorators(decorators)
     {
+        if (!decorators)
+        {
+            return [];
+        }
+
         return transform(decorators, function(decorator){
 
             const { expression } = decorator;
@@ -429,7 +446,7 @@ module.exports = function (babel) {
             }
 
             return {
-                name: expression
+                name: expression.name
             }
         });
     }
@@ -448,12 +465,161 @@ module.exports = function (babel) {
         return null;
     }
 
-    function createProcessExports(path)
+    function findMapProperty(map, name)
+    {
+        const { properties } = map;
+
+        for (let i = 0; i < properties.length; i++)
+        {
+            const property = properties[i];
+            if (getNameOrValue(property.key) === name)
+            {
+                return property.value;
+            }
+        }
+
+        return undefined;
+    }
+
+    function recursiveStateObject(relativePath, node, path)
+    {
+        if (t.isStringLiteral(node))
+        {
+            return node.value;
+        }
+        else if (t.isArrowFunctionExpression(node) || t.isFunctionExpression(node))
+        {
+            const { params, body } = node;
+
+            if (params.length > 1)
+            {
+                throw new Error(relativePath + ", " + path.join(".") + ": Action function takes at most 1 parameter: (transition)");
+            }
+
+            return {
+                type : "Action",
+                params : transform(params, TakeName),
+                code: transform(body, TakeSource)
+            };
+        }
+        else if (t.isArrayExpression(node))
+        {
+            const { elements } = node;
+
+            const out = [];
+            for (let i = 0; i < elements.length; i++)
+            {
+                out[i] = recursiveStateObject(relativePath, elements[i], path.concat(i));
+            }
+            return out;
+        }
+        else if (t.isMemberExpression(node) && node.object.name === "scope")
+        {
+            return {
+                type : "Action",
+                params : [],
+                code: TakeSource(node) + "()"
+            }
+        }
+        else if (t.isObjectExpression(node))
+        {
+            const { properties } = node;
+
+            const out = {};
+            for (let i = 0; i < properties.length; i++)
+            {
+                const property = properties[i];
+                const name = getNameOrValue(property.key);
+                out[name] = recursiveStateObject(relativePath, property.value, path.concat(name));
+            }
+            return out;
+        }
+        else
+        {
+            throw new Error(relativePath + ", " + path.join(".") + ": Invalid state map object: " + JSON.stringify(node));
+        }
+    }
+
+    function isValidAction(action)
+    {
+        if (!action || typeof action !== "object")
+        {
+            return false;
+        }
+
+        const { type, params, code} = action;
+
+        return (
+            type === "Action" &&
+            Array.isArray(params) &&
+            params.length <= 1 &&
+            typeof code === "string" &&
+            Object.keys(action).length === 3
+        );
+    }
+
+    function validateStateMap(relativePath, stateMap)
+    {
+        if (!stateMap || typeof stateMap !== "object")
+        {
+            throw new Error("State map root must be an object");
+        }
+
+        for (let stateName in stateMap)
+        {
+            if (stateMap.hasOwnProperty(stateName))
+            {
+                const stateObject = stateMap[stateName];
+
+                if (!stateObject || typeof stateObject !== "object")
+                {
+                    throw new Error(relativePath + ", state '" + stateName + "': value must be an object");
+                }
+
+                for (let transitionName in stateObject)
+                {
+                    if (stateObject.hasOwnProperty(transitionName))
+                    {
+                        const transitionObject = stateObject[transitionName];
+                        if (!transitionObject || typeof transitionObject !== "object")
+                        {
+                            throw new Error(relativePath + ", state '" + stateName + "', transition = '" + transitionName + "': value must be an object");
+                        }
+
+                        const { to, action} = transitionObject;
+
+                        const keys = Object.keys(transitionObject);
+                        if (keys.length > 2)
+                        {
+                            throw new Error(relativePath + ", state '" + stateName + "', Invalid transition key(s): " + keys.join(","));
+                        }
+
+                        if (!to && !action)
+                        {
+                            throw new Error(relativePath + ", state '" + stateName + "', transition must have at least a 'to' or an 'action' property");
+                        }
+
+                        if (action && !isValidAction(action))
+                        {
+                            throw new Error(relativePath + ", state '" + stateName + "', Invalid action object: " + action);
+                        }
+
+                    }
+                }
+            }
+        }
+
+        return stateMap;
+    }
+
+    function createProcessExports(relativePath, path)
     {
         const processExports = {
             type: "ProcessExports",
-            config: [],
-            states: null,
+
+            configuration: [],
+
+            process: null,
             scope: {
                 name: null,
                 observables: [],
@@ -464,31 +630,130 @@ module.exports = function (babel) {
         };
 
 
-        //console.log("CLASS", JSON.stringify(processExports));
 
         path.traverse({
 
             "ExportNamedDeclaration": function (path, state) {
-                const {node} = path;
-                const {declarations} = node.declaration;
+                const { node } = path;
+                const { declaration } = node;
 
-                for (let i = 0; i < declarations.length; i++)
+                if (t.isFunctionDeclaration(declaration) && declaration.id.name === "initProcess")
                 {
-                    const decl = declarations[i];
-                    if (t.isIdentifier(decl) && dec.name === "initProcess")
-                    {
+                    const { body } = declaration;
 
+                    const params = transform(declaration.params, TakeName);
+
+                    if (params.length !== 2 || params[0] !== "process" || params[1] !== "scope")
+                    {
+                        throw new Error(relativePath + ": initProcess takes exactly 2 parameters which must be named 'process' and 'scope'.");
+                    }
+
+                    // shallow traversal over initProcess body only
+
+                    const { configuration } = processExports;
+
+                    let process;
+                    const kids = body.body;
+                    for (let i = 0; i < kids.length; i++)
+                    {
+                        const kid = kids[i];
+
+                        if (t.isReturnStatement(kid))
+                        {
+
+                            const map = kid.argument;
+
+                            if (!t.isObjectExpression(map))
+                            {
+                                throw new Error(relativePath + ": initProcess return value must be an object literal: is " + JSON.stringify(map));
+                            }
+
+                            const startState = findMapProperty(map, "startState");
+
+                            if (!t.isStringLiteral(startState))
+                            {
+                                throw new Error(relativePath + ": 'startState' property must be a string literal");
+                            }
+
+                            const statesNode = findMapProperty(map, "states");
+                            if (!t.isObjectExpression(statesNode))
+                            {
+                                throw new Error(relativePath + ": 'states' property must be an object literal");
+                            }
+
+                            const states =
+                                validateStateMap(
+                                    relativePath,
+                                    recursiveStateObject(relativePath, statesNode, ["states"])
+                                )
+                            ;
+
+                            processExports.process = {
+                                startState: startState.value,
+                                states: states
+                            };
+                        }
+                        else if (t.isExpressionStatement(kid)) {
+
+                            const { expression } = kid;
+                            const comments = extractLeadingComments(kid);
+
+                            if (t.isAssignmentExpression(expression))
+                            {
+                                const { left } = expression;
+
+                                if (t.isMemberExpression(left) && params.indexOf(left.object.name) >= 0)
+                                {
+                                    const code = TakeSource(expression);
+                                    if (comments)
+                                    {
+                                        configuration.push(
+                                            "/* " + comments + " /*\n",
+                                            code
+                                        );
+                                    }
+                                    else
+                                    {
+                                        configuration.push(code);
+                                    }
+                                }
+
+                            }
+                            else if (t.isCallExpression(expression))
+                            {
+                                const { callee } = expression;
+
+                                if (t.isMemberExpression(callee) && params.indexOf(callee.object.name) >= 0)
+                                {
+                                    const code = TakeSource(expression);
+                                    if (comments)
+                                    {
+                                        configuration.push(
+                                            "/* " + comments + "/*\n",
+                                            code
+                                        );
+                                    }
+                                    else
+                                    {
+                                        configuration.push(code);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
 
             "ExportDefaultDeclaration" : function (path, state) {
-                const { declaration } = node;
+
+
+                const { declaration } = path.node;
 
                 if (!t.isClassDeclaration(declaration))
                 {
                     throw new Error("Default process export must be scope class")
                 }
+
 
                 const { scope } = processExports;
 
@@ -501,15 +766,25 @@ module.exports = function (babel) {
                 {
                     const kid = body[i];
 
+                    const decorators = transformDecorators(kid.decorators);
+
+                    //console.log("DECO", decorators);
+
                     if (t.isClassProperty(kid))
                     {
-                        const decorators = transformDecorators(kid.decorators)
 
                         if (findDecorator(decorators, "observable"))
                         {
+                            const typeDeco = findDecorator(decorators, "type");
+
+                            //console.log("OBSERVABLE",   JSON.stringify(kid,0,4), "\n----");
+
+                            const comments = extractLeadingComments(kid.decorators[0]);
                             scope.observables.push({
+                                type: typeDeco && JSON.parse(typeDeco.arguments[0]),
                                 name: kid.key.name,
-                                value: Take
+                                defaultValue: TakeSource(kid.value),
+                                description: comments
                             })
                         }
                     }
@@ -518,19 +793,44 @@ module.exports = function (babel) {
 
                         if (findDecorator(decorators, "action"))
                         {
-                            scope.actions.push({
+                            const actionName = kid.key.name;
+                            if (kid.kind !== "method")
+                            {
+                                throw new Error("@action is not a class method: " + actionName);
+                            }
 
+                            scope.actions.push({
+                                name: actionName,
+                                params: transform(kid.params, TakeName),
+                                code: transform(kid.body.body, TakeSource).join("\n")
                             })
                         }
                         else if (findDecorator(decorators, "computed"))
                         {
-                            scope.computeds.push({
+                            const computedName = kid.key.name;
+                            if (kid.kind !== "get")
+                            {
+                                throw new Error("@computed is not a getter: " + computedName);
+                            }
 
+                            scope.computeds.push({
+                                name: computedName,
+                                code: transform(kid.body.body, TakeSource).join("\n")
                             })
                         }
                         else
                         {
-                            helpers.push(TakeSource(kid));
+                            const helperName = kid.key.name;
+                            if (kid.kind !== "method")
+                            {
+                                throw new Error("Helper is not a class method: " + helperName);
+                            }
+
+                            scope.helpers.push({
+                                name: helperName,
+                                params: transform(kid.params, TakeName),
+                                code: transform(kid.body.body, TakeSource).join("\n")
+                            });
                         }
                     }
                 }
@@ -601,29 +901,32 @@ module.exports = function (babel) {
             },
 
             "ClassDeclaration": function (path, state) {
-                const {node} = path;
+                const { node } = path;
                 const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
 
                 const { appName, processName, moduleName, isComposite } = matchPath(relativePath);
 
-                console.log({ appName, processName, moduleName, isComposite });
+                //console.log({ appName, processName, moduleName, isComposite });
 
-                if (processName)
+                if (processName && isComposite && moduleName === node.id.name)
                 {
-                    if (isComposite)
-                    {
-                        const { name } = node.id;
+                    Data.entry(relativePath, true).composite = createCompositeComponentDefinition(path);
+                }
+            },
 
-                        if ( moduleName === name)
-                        {
-                            Data.entry(relativePath, true).composite = createCompositeComponentDefinition(path);
-                        }
-                    }
-                    else  if (processName === moduleName)
-                    {
-                        Data.entry(relativePath, true).processExports = createProcessExports(path)
-                    }
+            "Program": function (path, state) {
+                const { node } = path;
+                const pluginOpts = state.opts;
+                const relativePath = getRelativeModulePath(path, pluginOpts);
+
+                const { appName, processName, moduleName, isComposite } = matchPath(relativePath);
+
+                //console.log({ appName, processName, moduleName, isComposite });
+
+                if (processName && !isComposite && processName === moduleName)
+                {
+                    Data.entry(relativePath, true).processExports = createProcessExports(relativePath, path)
                 }
             }
         }
