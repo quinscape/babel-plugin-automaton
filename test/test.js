@@ -102,10 +102,10 @@ describe("Babel Automaton Plugin", function () {
 
         transform("./test-modules/apps/test/processes/test/composites/RenderFunctionChild.js");
 
+        const data = Data.entry("./apps/test/processes/test/composites/RenderFunctionChild");
         //console.log(JSON.stringify(data,0, 4))
-
         assert.deepEqual(
-            Data.entry("./apps/test/processes/test/composites/RenderFunctionChild"),
+            data,
             {
                 "importDeclarations": [
                     {
@@ -137,7 +137,6 @@ describe("Babel Automaton Plugin", function () {
                             "type": "VariableDeclaration",
                             "kind": "const",
                             "declarations": [
-                                // multi-level object patterns
                                 {
                                     "type": "VariableDeclarator",
                                     "id": {
@@ -152,7 +151,10 @@ describe("Babel Automaton Plugin", function () {
                                                         {
                                                             "type": "ObjectProperty",
                                                             "key": "contextPath",
-                                                            "value": "length"
+                                                            "value": {
+                                                                "type": "Identifier",
+                                                                "name": "length"
+                                                            }
                                                         }
                                                     ]
                                                 }
@@ -171,7 +173,10 @@ describe("Babel Automaton Plugin", function () {
                             {
                                 "type": "JSXRenderFunction",
                                 "params": [
-                                    "context"
+                                    {
+                                        "type": "Identifier",
+                                        "name": "context"
+                                    }
                                 ],
                                 "constants": [
                                     {
@@ -180,7 +185,10 @@ describe("Babel Automaton Plugin", function () {
                                         "declarations": [
                                             {
                                                 "type": "VariableDeclarator",
-                                                "id": "uri",
+                                                "id": {
+                                                    "type": "Identifier",
+                                                    "name": "uri"
+                                                },
                                                 "init": "\"/xxx/\" + context + \"/\" + length"
                                             }
                                         ]
@@ -212,10 +220,11 @@ describe("Babel Automaton Plugin", function () {
 
         transform("./test-modules/apps/test/processes/test/composites/BodylessRenderFunctionChild.js");
 
+        const data = Data.entry("./apps/test/processes/test/composites/BodylessRenderFunctionChild");
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
-            Data.entry("./apps/test/processes/test/composites/BodylessRenderFunctionChild"),
+            data,
             {
                 "importDeclarations": [
                     {
@@ -247,7 +256,6 @@ describe("Babel Automaton Plugin", function () {
                             "type": "VariableDeclaration",
                             "kind": "const",
                             "declarations": [
-                                // multi-level object patterns
                                 {
                                     "type": "VariableDeclarator",
                                     "id": {
@@ -262,7 +270,10 @@ describe("Babel Automaton Plugin", function () {
                                                         {
                                                             "type": "ObjectProperty",
                                                             "key": "contextPath",
-                                                            "value": "length"
+                                                            "value": {
+                                                                "type": "Identifier",
+                                                                "name": "length"
+                                                            }
                                                         }
                                                     ]
                                                 }
@@ -280,19 +291,22 @@ describe("Babel Automaton Plugin", function () {
                         "kids": [
                             {
                                 "type": "JSXRenderFunction",
-                                "constants": [],
                                 "params": [
-                                    "context"
+                                    {
+                                        "type": "Identifier",
+                                        "name": "context"
+                                    }
                                 ],
+                                "constants": [],
                                 "root": {
+                                    "name": "em",
                                     "attrs": [],
                                     "kids": [
                                         {
-                                            "code": "{\"/xxx/\" + context + \"/\" + length}",
-                                            "type": "JSXExpressionContainer"
+                                            "type": "JSXExpressionContainer",
+                                            "code": "{\"/xxx/\" + context + \"/\" + length}"
                                         }
                                     ],
-                                    "name": "em",
                                     "type": "JSXElement"
                                 }
                             }
@@ -309,10 +323,11 @@ describe("Babel Automaton Plugin", function () {
 
         transform("./test-modules/apps/test/processes/test/composites/RenderFunctionAttr.js");
 
+        const data = Data.entry("./apps/test/processes/test/composites/RenderFunctionAttr");
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
-            Data.entry("./apps/test/processes/test/composites/RenderFunctionAttr"),
+            data,
             {
                 "importDeclarations": [
                     {
@@ -365,7 +380,10 @@ describe("Babel Automaton Plugin", function () {
                                 "value": {
                                     "type": "JSXRenderFunction",
                                     "params": [
-                                        "context"
+                                        {
+                                            "type": "Identifier",
+                                            "name": "context"
+                                        }
                                     ],
                                     "constants": [],
                                     "root": {
@@ -414,7 +432,7 @@ describe("Babel Automaton Plugin", function () {
         transform("./test-modules/apps/test/processes/test/test.js");
         const data = Data.entry("./apps/test/processes/test/test");
 
-        console.log(JSON.stringify(data,0, 4))
+        //console.log(JSON.stringify(data,0, 4))
 
     });
 });

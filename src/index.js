@@ -149,7 +149,9 @@ module.exports = function (babel) {
     {
         return (
             Switch({
-                Identifier: TakeName,
+                Identifier: {
+                    name: true
+                },
                 ObjectPattern: {
                     properties: {
                         key: TakeName,
