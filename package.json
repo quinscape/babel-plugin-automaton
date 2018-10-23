@@ -8,7 +8,8 @@
     "private": true,
     "dependencies": {
         "babel-generator": "^6.26.1",
-        "babel-runtime": "^6.26.0"
+        "babel-runtime": "^6.26.0",
+        "shelljs": "^0.8.2"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
