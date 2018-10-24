@@ -48,53 +48,74 @@ describe("Babel Automaton Plugin", function () {
     it("extracts simplified AST data from composite component sources", function () {
         transform("./test-modules/apps/test/processes/test/composites/SimpleComposite.js");
 
+        const data = Data.entry("./apps/test/processes/test/composites/SimpleComposite");
+
+        //console.log(JSON.stringify(data,0, 4))
+
         assert.deepEqual(
-            Data.entry("./apps/test/processes/test/composites/SimpleComposite"), {
-            "importDeclarations": [
-                {
-                    "type": "ImportDeclaration",
-                    "source": "react",
-                    "specifiers": [
-                        {
-                            "type": "ImportDefaultSpecifier",
-                            "name": "React"
-                        }
-                    ]
-                }
-            ],
-            "composite": {
-                "type": "CompositeComponent",
-                "constants": [],
-                "root": {
-                    "type": "JSXElement",
-                    "name": "div",
-                    "attrs": [],
-                    "kids": [
-                        {
-                            "type": "JSXElement",
-                            "name": "h1",
-                            "attrs": [
-                                {
-                                    "type": "JSXAttribute",
-                                    "name": "className",
-                                    "value": {
-                                        "type": "Expression",
-                                        "code": "\"test-class\""
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "react",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "React"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observer"
+                            }
+                        ]
+                    }
+                ],
+                "composite": {
+                    "type": "CompositeComponent",
+                    "constants": [],
+                    "root": {
+                        "name": "div",
+                        "attrs": [],
+                        "kids": [
+                            {
+                                "name": "h1",
+                                "attrs": [
+                                    {
+                                        "type": "JSXAttribute",
+                                        "name": "className",
+                                        "value": {
+                                            "type": "Expression",
+                                            "code": "\"test-class\""
+                                        }
                                     }
-                                }
-                            ],
-                            "kids": [
-                                {
-                                    "type": "JSXText",
-                                    "value": "SimpleComposite"
-                                }
-                            ]
+                                ],
+                                "kids": [
+                                    {
+                                        "type": "JSXText",
+                                        "value": "SimpleComposite"
+                                    }
+                                ],
+                                "type": "JSXElement"
+                            }
+                        ],
+                        "type": "JSXElement"
+                    },
+                    "decorators": [
+                        {
+                            "name": "observer"
                         }
                     ]
-                }
-            },
-            "export": "SimpleComposite"
-        })
+                },
+                "export": "SimpleComposite"
+            }
+        )
 
     });
 
@@ -126,6 +147,16 @@ describe("Babel Automaton Plugin", function () {
                             {
                                 "type": "ImportSpecifier",
                                 "name": "Widget"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observer"
                             }
                         ]
                     }
@@ -208,8 +239,12 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ],
                         "type": "JSXElement"
-                    }
-
+                    },
+                    "decorators": [
+                        {
+                            "name": "observer"
+                        }
+                    ]
                 },
                 "export": "RenderFunctionChild"
             }
@@ -246,6 +281,16 @@ describe("Babel Automaton Plugin", function () {
                             {
                                 "type": "ImportSpecifier",
                                 "name": "Widget"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observer"
                             }
                         ]
                     }
@@ -313,7 +358,12 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ],
                         "type": "JSXElement"
-                    }
+                    },
+                    "decorators": [
+                        {
+                            "name": "observer"
+                        }
+                    ]
                 },
                 "export": "BodylessRenderFunctionChild"
             }
@@ -364,6 +414,16 @@ describe("Babel Automaton Plugin", function () {
                             {
                                 "type": "ImportSpecifier",
                                 "name": "Button"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observer"
                             }
                         ]
                     }
@@ -421,7 +481,12 @@ describe("Babel Automaton Plugin", function () {
                         ],
                         "kids": [],
                         "type": "JSXElement"
-                    }
+                    },
+                    "decorators": [
+                        {
+                            "name": "observer"
+                        }
+                    ]
                 },
                 "export": "RenderFunctionAttr"
             }
@@ -950,7 +1015,8 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ],
                         "type": "JSXElement"
-                    }
+                    },
+                    "decorators": []
                 },
                 "export": "withForm(FormComposite, { type: \"FooInput\" })"
             }

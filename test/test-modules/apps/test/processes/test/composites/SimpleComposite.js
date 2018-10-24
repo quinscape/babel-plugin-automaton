@@ -1,7 +1,9 @@
 // noinspection NpmUsedModulesInstalled
 import React from "react"
 
+import { observer } from "mobx"
 
+@observer
 class SimpleComposite extends React.Component {
 
     render()

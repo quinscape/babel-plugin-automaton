@@ -374,7 +374,8 @@ module.exports = function (babel) {
         const classDeclaration = {
             type: "CompositeComponent",
             constants: [],
-            root: null
+            root: null,
+            decorators: transformDecorators(path.node.decorators)
         };
 
         //console.log("CLASS", JSON.stringify(classDeclaration));

@@ -2,6 +2,9 @@
 import React from "react"
 import { Widget } from "../../components/ui"
 
+import { observer } from "mobx"
+
+@observer
 class RenderFunctionChild extends React.Component {
 
     render()

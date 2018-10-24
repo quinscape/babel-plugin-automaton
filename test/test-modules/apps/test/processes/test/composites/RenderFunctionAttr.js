@@ -4,6 +4,9 @@ import { i18n } from "automaton-js"
 import { Widget as RenamedWidget, Button } from "../../components/ui"
 
 
+import { observer } from "mobx"
+
+@observer
 class RenderFunctionAttr extends React.Component {
 
     render()

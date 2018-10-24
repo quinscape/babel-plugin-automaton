@@ -2,7 +2,9 @@
 import React from "react"
 import { Widget } from "../../components/ui"
 
+import { observer } from "mobx"
 
+@observer
 class BodylessRenderFunctionChild extends React.Component {
 
     render()
