@@ -39,23 +39,28 @@ AutomatonPlugin.prototype.apply = function (compiler)
             {
                 const data = usageData[relativePath];
 
-                const fullPath = path.resolve(output, relativePath) + ".json";
-
-                const dir = path.resolve(output, getDirOf(relativePath));
-
-                //console.log("dir = ", dir, "fullPath = ", fullPath);
-
-                if (!fs.existsSync(dir))
+                // ignore if only imports
+                if (Object.keys(data).length > 1)
                 {
-                    shelljs.mkdir("-p", dir);
-                }
+                    const fullPath = path.resolve(output, relativePath) + ".json";
 
-                if (debug)
-                {
-                    console.log("Write data to " + fullPath);
-                }
+                    const dir = path.resolve(output, getDirOf(relativePath));
 
-                fs.writeFileSync(fullPath, JSON.stringify(data, null, 4), "UTF-8");
+                    //console.log("dir = ", dir, "fullPath = ", fullPath);
+
+                    if (!fs.existsSync(dir))
+                    {
+                        shelljs.mkdir("-p", dir);
+                    }
+
+                    if (debug)
+                    {
+                        console.log("Write data to " + fullPath);
+                    }
+
+                    fs.writeFileSync(fullPath, JSON.stringify(data, null, 4), "UTF-8");
+
+                }
             }
         }
         callback();
