@@ -1022,4 +1022,109 @@ describe("Babel Automaton Plugin", function () {
             }
         )
     });
+    it("extracts conditional components to renderedIf attributes", function () {
+
+        transform("./test-modules/apps/test/processes/test/composites/ConditionalComponent.js");
+
+        const data = Data.entry("./apps/test/processes/test/composites/ConditionalComponent");
+        console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "react",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "React"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observer"
+                            }
+                        ]
+                    }
+                ],
+                "composite": {
+                    "type": "CompositeComponent",
+                    "constants": [
+                        {
+                            "type": "VariableDeclaration",
+                            "kind": "const",
+                            "declarations": [
+                                {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "ObjectPattern",
+                                        "properties": [
+                                            {
+                                                "type": "ObjectProperty",
+                                                "key": "env",
+                                                "value": {
+                                                    "type": "ObjectPattern",
+                                                    "properties": [
+                                                        {
+                                                            "type": "ObjectProperty",
+                                                            "key": "contextPath",
+                                                            "value": {
+                                                                "type": "Identifier",
+                                                                "name": "cp"
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "init": "this.props"
+                                }
+                            ]
+                        }
+                    ],
+                    "root": {
+                        "name": "div",
+                        "attrs": [],
+                        "kids": [
+                            {
+                                "name": "h1",
+                                "attrs": [
+                                    {
+                                        "type": "JSXAttribute",
+                                        "name": "renderedIf",
+                                        "value": {
+                                            "type": "Expression",
+                                            "code": "cp === \"/foo\" || cp === \"\""
+                                        }
+                                    }
+                                ],
+                                "kids": [
+                                    {
+                                        "type": "JSXText",
+                                        "value": "ConditionalComponent"
+                                    }
+                                ],
+                                "type": "JSXElement"
+                            }
+                        ],
+                        "type": "JSXElement"
+                    },
+                    "decorators": [
+                        {
+                            "name": "observer"
+                        }
+                    ]
+                },
+                "export": "ConditionalComponent"
+            }
+        )
+    });
 });

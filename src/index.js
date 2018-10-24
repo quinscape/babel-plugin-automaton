@@ -267,7 +267,7 @@ module.exports = function (babel) {
         }
     }
 
-    function recursiveJSX(node)
+    function recursiveJSX(node, renderedIf)
     {
         return (
             Switch({
@@ -275,7 +275,7 @@ module.exports = function (babel) {
                     function (node) {
                         const { openingElement } = node;
 
-                        return {
+                        const transformedElement = {
                             name: TakeSource(openingElement.name),
                             attrs: transform(openingElement.attributes, {
                                 name: TakeName,
@@ -307,15 +307,42 @@ module.exports = function (babel) {
                             }),
                             kids: transform(node.children, function (node) {
 
-                                const renderFn = t.isJSXExpressionContainer(node) && handleRenderFunction(node.expression);
-                                if (renderFn)
+                                if (t.isJSXExpressionContainer(node))
                                 {
-                                    return renderFn;
-                                }
+                                    const { expression } = node;
 
+                                    if (
+                                        t.isLogicalExpression(expression) &&
+                                        expression.operator === "&&" &&
+                                        t.isJSXElement(expression.right)
+                                    )
+                                    {
+                                        return recursiveJSX(expression.right, {
+                                            "type": "JSXAttribute",
+                                            name: "renderedIf",
+                                            value: {
+                                                type: "Expression",
+                                                code: TakeSource(expression.left)
+                                            }
+                                        });
+                                    }
+
+                                    const renderFn =  handleRenderFunction(node.expression);
+                                    if (renderFn)
+                                    {
+                                        return renderFn;
+                                    }
+                                }
                                 return recursiveJSX(node)
                             })
+                        };
+
+                        if (renderedIf)
+                        {
+                            transformedElement.attrs.push(renderedIf);
                         }
+
+                        return transformedElement;
                     },
                 "JSXText": function (node) {
 
