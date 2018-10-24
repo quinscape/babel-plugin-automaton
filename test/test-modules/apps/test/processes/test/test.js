@@ -42,7 +42,7 @@ export function initProcess(process, scope)
             }
         }
     );
-};
+}
 
 export default class TestScope {
 
