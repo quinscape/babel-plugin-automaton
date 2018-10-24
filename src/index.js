@@ -141,6 +141,11 @@ function getNameOrValue(node)
     return node.name || node.value;
 }
 
+function trim(value)
+{
+    return value.replace(/^[ \r\t\n]*(.*?)[ \r\t\n]*$/, "$1");
+}
+
 function extractLeadingComments(node)
 {
     const { leadingComments } = node;
@@ -149,7 +154,7 @@ function extractLeadingComments(node)
 
         const value = TakeValue(node);
 
-        return value.replace(/^[ \r\t\n]*(.*?)[ \r\t\n]*$/, "$1")
+        return trim(value)
 
     }).join("\n") : null;
 }
@@ -319,7 +324,7 @@ module.exports = function (babel) {
                     {
                         return {
                             type: "JSXText",
-                            value: value
+                            value: trim(value)
                         }
                     }
                 },

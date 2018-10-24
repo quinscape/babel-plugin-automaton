@@ -565,7 +565,7 @@ describe("Babel Automaton Plugin", function () {
         transform("./test-modules/apps/test/processes/test/composites/FormComposite.js");
 
         const data = Data.entry("./apps/test/processes/test/composites/FormComposite");
-        console.log(JSON.stringify(data,0, 4))
+        //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
             data,
@@ -662,9 +662,298 @@ describe("Babel Automaton Plugin", function () {
                         ]
                     }
                 ],
-                "export": "withForm(FooForm, { type: \"FooInput\" })"
+                "composite": {
+                    "type": "CompositeComponent",
+                    "constants": [
+                        {
+                            "type": "VariableDeclaration",
+                            "kind": "const",
+                            "declarations": [
+                                {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "ObjectPattern",
+                                        "properties": [
+                                            {
+                                                "type": "ObjectProperty",
+                                                "key": "authentication",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "name": "authentication"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "init": "config()"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "VariableDeclaration",
+                            "kind": "const",
+                            "declarations": [
+                                {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "ObjectPattern",
+                                        "properties": [
+                                            {
+                                                "type": "ObjectProperty",
+                                                "key": "formConfig",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "name": "formConfig"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "init": "this.props"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "VariableDeclaration",
+                            "kind": "const",
+                            "declarations": [
+                                {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "ObjectPattern",
+                                        "properties": [
+                                            {
+                                                "type": "ObjectProperty",
+                                                "key": "formikProps",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "name": "formikProps"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "init": "formConfig"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "VariableDeclaration",
+                            "kind": "const",
+                            "declarations": [
+                                {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "ObjectPattern",
+                                        "properties": [
+                                            {
+                                                "type": "ObjectProperty",
+                                                "key": "isValid",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "name": "isValid"
+                                                }
+                                            },
+                                            {
+                                                "type": "ObjectProperty",
+                                                "key": "values",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "name": "values"
+                                                }
+                                            },
+                                            {
+                                                "type": "ObjectProperty",
+                                                "key": "errors",
+                                                "value": {
+                                                    "type": "Identifier",
+                                                    "name": "errors"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "init": "formikProps"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "VariableDeclaration",
+                            "kind": "const",
+                            "declarations": [
+                                {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "Identifier",
+                                        "name": "canAccess"
+                                    },
+                                    "init": "authentication.id === values.ownerId || hasRole(\"ROLE_ADMIN\")"
+                                }
+                            ]
+                        }
+                    ],
+                    "root": {
+                        "name": "React.Fragment",
+                        "attrs": [],
+                        "kids": [
+                            {
+                                "name": "GlobalErrors",
+                                "attrs": [],
+                                "kids": [],
+                                "type": "JSXElement"
+                            },
+                            {
+                                "name": "Field",
+                                "attrs": [
+                                    {
+                                        "type": "JSXAttribute",
+                                        "name": "name",
+                                        "value": {
+                                            "type": "Expression",
+                                            "code": "\"name\""
+                                        }
+                                    }
+                                ],
+                                "kids": [],
+                                "type": "JSXElement"
+                            },
+                            {
+                                "name": "TextArea",
+                                "attrs": [
+                                    {
+                                        "type": "JSXAttribute",
+                                        "name": "name",
+                                        "value": {
+                                            "type": "Expression",
+                                            "code": "\"description\""
+                                        }
+                                    }
+                                ],
+                                "kids": [],
+                                "type": "JSXElement"
+                            },
+                            {
+                                "name": "Field",
+                                "attrs": [
+                                    {
+                                        "type": "JSXAttribute",
+                                        "name": "name",
+                                        "value": {
+                                            "type": "Expression",
+                                            "code": "\"num\""
+                                        }
+                                    }
+                                ],
+                                "kids": [],
+                                "type": "JSXElement"
+                            },
+                            {
+                                "name": "div",
+                                "attrs": [],
+                                "kids": [
+                                    {
+                                        "name": "button",
+                                        "attrs": [
+                                            {
+                                                "type": "JSXAttribute",
+                                                "name": "type",
+                                                "value": {
+                                                    "type": "Expression",
+                                                    "code": "\"reset\""
+                                                }
+                                            },
+                                            {
+                                                "type": "JSXAttribute",
+                                                "name": "className",
+                                                "value": {
+                                                    "type": "Expression",
+                                                    "code": "\"btn btn-secondary\""
+                                                }
+                                            }
+                                        ],
+                                        "kids": [
+                                            {
+                                                "name": "Icon",
+                                                "attrs": [
+                                                    {
+                                                        "type": "JSXAttribute",
+                                                        "name": "className",
+                                                        "value": {
+                                                            "type": "Expression",
+                                                            "code": "\"fa-recycle\""
+                                                        }
+                                                    }
+                                                ],
+                                                "kids": [],
+                                                "type": "JSXElement"
+                                            },
+                                            {
+                                                "type": "JSXExpressionContainer",
+                                                "code": "{\" \"}"
+                                            },
+                                            {
+                                                "type": "JSXText",
+                                                "value": "Reset"
+                                            }
+                                        ],
+                                        "type": "JSXElement"
+                                    },
+                                    {
+                                        "type": "JSXExpressionContainer",
+                                        "code": "{\" \"}"
+                                    },
+                                    {
+                                        "name": "button",
+                                        "attrs": [
+                                            {
+                                                "type": "JSXAttribute",
+                                                "name": "type",
+                                                "value": {
+                                                    "type": "Expression",
+                                                    "code": "\"submit\""
+                                                }
+                                            },
+                                            {
+                                                "type": "JSXAttribute",
+                                                "name": "className",
+                                                "value": {
+                                                    "type": "JSXExpressionContainer",
+                                                    "code": "{cx(\"btn\", canAccess ? \"btn-success\" : \"btn-danger\")}"
+                                                }
+                                            }
+                                        ],
+                                        "kids": [
+                                            {
+                                                "name": "Icon",
+                                                "attrs": [
+                                                    {
+                                                        "type": "JSXAttribute",
+                                                        "name": "className",
+                                                        "value": {
+                                                            "type": "Expression",
+                                                            "code": "\"fa-save\""
+                                                        }
+                                                    }
+                                                ],
+                                                "kids": [],
+                                                "type": "JSXElement"
+                                            },
+                                            {
+                                                "type": "JSXExpressionContainer",
+                                                "code": "{\" \"}"
+                                            },
+                                            {
+                                                "type": "JSXText",
+                                                "value": "Save"
+                                            }
+                                        ],
+                                        "type": "JSXElement"
+                                    }
+                                ],
+                                "type": "JSXElement"
+                            }
+                        ],
+                        "type": "JSXElement"
+                    }
+                },
+                "export": "withForm(FormComposite, { type: \"FooInput\" })"
             }
         )
-
     });
 });

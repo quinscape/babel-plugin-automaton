@@ -9,7 +9,7 @@ import config from "../../services/config";
 import hasRole from "../../util/hasRole";
 
 
-class FooForm extends React.Component {
+class FormComposite extends React.Component {
 
     render()
     {
@@ -62,7 +62,7 @@ class FooForm extends React.Component {
 }
 
 export default withForm(
-    FooForm,
+    FormComposite,
     {
         type: "FooInput"
     }
