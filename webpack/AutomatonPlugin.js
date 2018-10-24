@@ -43,14 +43,10 @@ AutomatonPlugin.prototype.apply = function (compiler)
 
                 const dir = path.resolve(output, getDirOf(relativePath));
 
-                console.log("dir = ", dir, "fullPath = ", fullPath);
+                //console.log("dir = ", dir, "fullPath = ", fullPath);
 
                 if (!fs.existsSync(dir))
                 {
-                    if (debug)
-                    {
-                        console.log("Create directory " + dir);
-                    }
                     shelljs.mkdir("-p", dir);
                 }
 
@@ -60,8 +56,6 @@ AutomatonPlugin.prototype.apply = function (compiler)
                 }
 
                 fs.writeFileSync(fullPath, JSON.stringify(data, null, 4), "UTF-8");
-
-
             }
         }
         callback();
