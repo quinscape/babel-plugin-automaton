@@ -1022,12 +1022,13 @@ describe("Babel Automaton Plugin", function () {
             }
         )
     });
+
     it("extracts conditional components to renderedIf attributes", function () {
 
         transform("./test-modules/apps/test/processes/test/composites/ConditionalComponent.js");
 
         const data = Data.entry("./apps/test/processes/test/composites/ConditionalComponent");
-        console.log(JSON.stringify(data,0, 4))
+        //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
             data,
@@ -1124,6 +1125,113 @@ describe("Babel Automaton Plugin", function () {
                     ]
                 },
                 "export": "ConditionalComponent"
+            }
+        )
+    });
+
+    it("extracts global scope definitions", function () {
+
+        transform("./test-modules/apps/test/scopes.js");
+
+        const data = Data.entry("./apps/test/scopes");
+
+        //console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "action"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observable"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "automaton-js",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "type"
+                            }
+                        ]
+                    }
+                ],
+                "applicationScope": {
+                    "name": "ApplicationScope",
+                    "observables": [
+                        {
+                            "type": "String",
+                            "name": "configValue",
+                            "defaultValue": "\"\"",
+                            "description": null
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "name": "appScopeAction",
+                            "params": [
+                                "s"
+                            ],
+                            "code": "this.configValue = s;"
+                        }
+                    ],
+                    "computeds": [],
+                    "helpers": []
+                },
+                "userScope": {
+                    "name": "UserScope",
+                    "observables": [
+                        {
+                            "type": "Int",
+                            "name": "configValue",
+                            "defaultValue": "1283",
+                            "description": null
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "name": "userScopeAction",
+                            "params": [
+                                "n"
+                            ],
+                            "code": "this.configValue = n;"
+                        }
+                    ],
+                    "computeds": [],
+                    "helpers": []
+                },
+                "sessionScope": {
+                    "name": "SessionScope",
+                    "observables": [
+                        {
+                            "type": "Boolean",
+                            "name": "configValue",
+                            "defaultValue": "false",
+                            "description": null
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "name": "userScopeAction",
+                            "params": [
+                                "f"
+                            ],
+                            "code": "this.configValue = f;"
+                        }
+                    ],
+                    "computeds": [],
+                    "helpers": []
+                }
             }
         )
     });

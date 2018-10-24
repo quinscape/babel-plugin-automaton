@@ -21,7 +21,7 @@ const NO_MATCH = {
     isComposite : null
 };
 
-const PROCESS_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/processes\/(.*?)\/(composites\/)?(.*?)$/;
+const PROCESS_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/(processes\/(.*?)\/(composites\/)?)?(.*?)$/;
 
 function matchPath(path)
 {
@@ -33,9 +33,9 @@ function matchPath(path)
 
     return {
         appName: m[1],
-        processName: m[2],
-        moduleName: m[4],
-        isComposite: !!m[3]
+        processName: m[3],
+        moduleName: m[5],
+        isComposite: !!m[4]
     }
 }
 
@@ -159,6 +159,11 @@ function extractLeadingComments(node)
     }).join("\n") : null;
 }
 
+function decapitalize(s)
+{
+    return s.charAt(0).toLowerCase() + s.substr(1);
+}
+
 module.exports = function (babel) {
 
     const t = babel.types;
@@ -214,7 +219,7 @@ module.exports = function (babel) {
         }
         return false;
     }
-    
+
     function handleRenderFunction(node)
     {
         const isRenderResult = isRenderFunction(node);
@@ -645,6 +650,95 @@ module.exports = function (babel) {
         return stateMap;
     }
 
+    function createScopeDefinition(relativePath, declaration)
+    {
+        const scope = {
+            name: declaration.id.name,
+            observables: [],
+            actions: [],
+            computeds: [],
+            helpers: []
+        };
+
+        // shallow traversal over class body only
+        const {body} = declaration.body;
+
+        for (let i = 0; i < body.length; i++)
+        {
+            const kid = body[i];
+
+            const decorators = transformDecorators(kid.decorators);
+
+            //console.log("DECO", decorators);
+
+            if (t.isClassProperty(kid))
+            {
+
+                if (findDecorator(decorators, "observable"))
+                {
+                    const typeDeco = findDecorator(decorators, "type");
+
+                    //console.log("OBSERVABLE",   JSON.stringify(kid,0,4), "\n----");
+
+                    const comments = extractLeadingComments(kid.decorators[0]);
+                    scope.observables.push({
+                        type: typeDeco && JSON.parse(typeDeco.arguments[0]),
+                        name: kid.key.name,
+                        defaultValue: TakeSource(kid.value),
+                        description: comments
+                    })
+                }
+            }
+            else if (t.isClassMethod(kid))
+            {
+
+                if (findDecorator(decorators, "action"))
+                {
+                    const actionName = kid.key.name;
+                    if (kid.kind !== "method")
+                    {
+                        throw new Error(relativePath + ": @action is not a class method: " + actionName);
+                    }
+
+                    scope.actions.push({
+                        name: actionName,
+                        params: transform(kid.params, TakeName),
+                        code: transform(kid.body.body, TakeSource).join("\n")
+                    })
+                }
+                else if (findDecorator(decorators, "computed"))
+                {
+                    const computedName = kid.key.name;
+                    if (kid.kind !== "get")
+                    {
+                        throw new Error(relativePath + ": @computed is not a getter: " + computedName);
+                    }
+
+                    scope.computeds.push({
+                        name: computedName,
+                        code: transform(kid.body.body, TakeSource).join("\n")
+                    })
+                }
+                else
+                {
+                    const helperName = kid.key.name;
+                    if (kid.kind !== "method")
+                    {
+                        throw new Error(relativePath + ": Helper must be class method: " + helperName);
+                    }
+
+                    scope.helpers.push({
+                        name: helperName,
+                        params: transform(kid.params, TakeName),
+                        code: transform(kid.body.body, TakeSource).join("\n")
+                    });
+                }
+            }
+        }
+
+        return scope;
+    }
+
     function createProcessExports(relativePath, path)
     {
         const processExports = {
@@ -653,16 +747,8 @@ module.exports = function (babel) {
             configuration: [],
 
             process: null,
-            scope: {
-                name: null,
-                observables: [],
-                actions: [],
-                computeds: [],
-                helpers: []
-            }
+            scope: null
         };
-
-
 
         path.traverse({
 
@@ -787,91 +873,38 @@ module.exports = function (babel) {
                     throw new Error("Default process export must be scope class")
                 }
 
-
-                const { scope } = processExports;
-
-                scope.name = declaration.id.name;
-
-                // shallow traversal over class body only
-                const { body } = declaration.body;
-
-                for (let i = 0; i < body.length; i++)
-                {
-                    const kid = body[i];
-
-                    const decorators = transformDecorators(kid.decorators);
-
-                    //console.log("DECO", decorators);
-
-                    if (t.isClassProperty(kid))
-                    {
-
-                        if (findDecorator(decorators, "observable"))
-                        {
-                            const typeDeco = findDecorator(decorators, "type");
-
-                            //console.log("OBSERVABLE",   JSON.stringify(kid,0,4), "\n----");
-
-                            const comments = extractLeadingComments(kid.decorators[0]);
-                            scope.observables.push({
-                                type: typeDeco && JSON.parse(typeDeco.arguments[0]),
-                                name: kid.key.name,
-                                defaultValue: TakeSource(kid.value),
-                                description: comments
-                            })
-                        }
-                    }
-                    else if (t.isClassMethod(kid))
-                    {
-
-                        if (findDecorator(decorators, "action"))
-                        {
-                            const actionName = kid.key.name;
-                            if (kid.kind !== "method")
-                            {
-                                throw new Error("@action is not a class method: " + actionName);
-                            }
-
-                            scope.actions.push({
-                                name: actionName,
-                                params: transform(kid.params, TakeName),
-                                code: transform(kid.body.body, TakeSource).join("\n")
-                            })
-                        }
-                        else if (findDecorator(decorators, "computed"))
-                        {
-                            const computedName = kid.key.name;
-                            if (kid.kind !== "get")
-                            {
-                                throw new Error("@computed is not a getter: " + computedName);
-                            }
-
-                            scope.computeds.push({
-                                name: computedName,
-                                code: transform(kid.body.body, TakeSource).join("\n")
-                            })
-                        }
-                        else
-                        {
-                            const helperName = kid.key.name;
-                            if (kid.kind !== "method")
-                            {
-                                throw new Error("Helper is not a class method: " + helperName);
-                            }
-
-                            scope.helpers.push({
-                                name: helperName,
-                                params: transform(kid.params, TakeName),
-                                code: transform(kid.body.body, TakeSource).join("\n")
-                            });
-                        }
-                    }
-                }
+                processExports.scope = createScopeDefinition(relativePath, declaration);
             }
         });
 
         return processExports;
 
+    }
+
+    const SCOPE_NAMES = [
+          "ApplicationScope",
+          "UserScope",
+          "SessionScope"
+    ];
+
+    function createScopeDefinitions(relativePath, path, state)
+    {
+        const scopes = {};
+
+        path.traverse({
+            "ClassDeclaration": function (path) {
+                const { node } = path;
+                const pluginOpts = state.opts;
+                const relativePath = getRelativeModulePath(path, pluginOpts);
+
+                if (SCOPE_NAMES.indexOf(node.id.name) >= 0)
+                {
+                    scopes[decapitalize(node.id.name)] = createScopeDefinition(relativePath, path.node)
+                }
+            }
+        });
+
+        return scopes;
     }
 
     return {
@@ -975,6 +1008,15 @@ module.exports = function (babel) {
                 if (processName && !isComposite && processName === moduleName)
                 {
                     Data.entry(relativePath, true).processExports = createProcessExports(relativePath, path)
+                }
+                else if (!processName && moduleName === "scopes")
+                {
+                    const scopes = createScopeDefinitions(relativePath, path, state);
+
+                    Object.assign(
+                        Data.entry(relativePath, true),
+                        scopes
+                    );
                 }
             }
         }
