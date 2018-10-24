@@ -287,9 +287,7 @@ describe("Transform", function () {
                 }
                 , {
                     people: Switch(
-                        function (p) {
-                            return p.name
-                        },
+                        "name",
                         {
                             Adam: {
                                 type: true
@@ -307,9 +305,11 @@ describe("Transform", function () {
             {
                 people: [
                     {
+                        name: "Adam",
                         type: "A"
                     },
                     {
+                        name: "Berta",
                         type: "*B"
                     }
                 ]
@@ -459,36 +459,37 @@ describe("Transform", function () {
 
     it("doesn't copy the 'type' property if its null on the rule", function () {
 
-        assert.deepEqual(
-            transform(
-                {
-                    people: [
-                        {
-                            type: "A",
-                            name: "Adam"
-                        },
-                        {
-                            type: "B",
-                            name: "Berta"
+        const result = transform(
+            {
+                people: [
+                    {
+                        type: "A",
+                        name: "Adam"
+                    },
+                    {
+                        type: "B",
+                        name: "Berta"
+                    }
+                ]
+            }
+            , {
+                people: Switch({
+                    A: {
+                        type: null,
+                        name: function (name) {
+                            return "*" + name;
                         }
-                    ]
-                }
-                , {
-                    people: Switch({
-                        A: {
-                            type: null,
-                            name: function (name) {
-                                return "*" + name;
-                            }
 
-                        },
-                        B: {
-                            type: null,
-                            name: true
-                        }
-                    })
-                }
-            ),
+                    },
+                    B: {
+                        type: null,
+                        name: true
+                    }
+                })
+            }
+        );
+        assert.deepEqual(
+            result,
             {
                 people: [
                     {

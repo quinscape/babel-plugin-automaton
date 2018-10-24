@@ -97,11 +97,6 @@ function transform(node, rule)
     return transformRecursive(node, rule, ["root"]);
 }
 
-function getType(node)
-{
-    return node.type;
-}
-
 /**
  * Switch function. Takes a map of choices. If the value equals one of the keys, the value is used as sub-rule, otherwise
  * the property is ignored.
@@ -127,18 +122,21 @@ function Switch(key, switchRule)
         let result;
         if (switchRule.hasOwnProperty(value))
         {
-            result = transformRecursive(node, switchRule[value], ["Switch('" + value + "')"]);
+            const subRule = switchRule[value];
+            result = transformRecursive(node, subRule, ["Switch('" + value + "')"]);
+            if (result && !result[key] && subRule[key] !== null)
+            {
+                result[key] = value;
+            }
         }
         else if (switchRule.default)
         {
             result = transformRecursive(node, switchRule.default, ["Switch.default"])
+            if (result && !result[key] && switchRule.default[key] !== null)
+            {
+                result[key] = value;
+            }
         }
-
-        if (result && !result[key])
-        {
-            result[key] = value;
-        }
-
         return result;
     }
 }
