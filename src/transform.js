@@ -107,7 +107,7 @@ function transform(node, rule)
  */
 function Switch(key, switchRule)
 {
-    if (arguments.length === 1)
+    if (switchRule === undefined)
     {
         switchRule = key;
         key = "type"
