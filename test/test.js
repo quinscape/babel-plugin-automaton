@@ -555,7 +555,7 @@ describe("Babel Automaton Plugin", function () {
                         "process.generalHelper(12)"
                     ],
                     "process": {
-                        "startState": "CustomerList",
+                        "startState": "\"CustomerList\"",
                         "states": {
                             "CustomerList": {
                                 "to-detail": {
@@ -1233,6 +1233,59 @@ describe("Babel Automaton Plugin", function () {
                     "helpers": []
                 }
             }
+        )
+    });
+    it("extracts start transitions", function () {
+
+        transform("./test-modules/apps/test/processes/start-transition/start-transition.js");
+
+        const data = Data.entry("./apps/test/processes/start-transition/start-transition");
+
+        console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "automaton-js",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "Process"
+                            }
+                        ]
+                    }
+                ],
+                "processExports": {
+                    "type": "ProcessExports",
+                    "configuration": [],
+                    "process": {
+                        "startState": "t => { const { target } = process.input; t.target = target && \"Target\" + target.toUpperCase() || \"Home\"; }",
+                        "states": {
+                            "Home": {},
+                            "TargetA": {
+                                "back": {
+                                    "to": "Home"
+                                }
+                            },
+                            "TargetB": {
+                                "back": {
+                                    "to": "Home"
+                                }
+                            },
+                            "TargetC": {
+                                "back": {
+                                    "to": "Home"
+                                }
+                            }
+                        }
+                    },
+                    "scope": null
+                }
+            }
+
         )
     });
 });

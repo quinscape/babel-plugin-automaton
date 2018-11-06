@@ -789,9 +789,9 @@ module.exports = function (babel) {
 
                             const startState = findMapProperty(map, "startState");
 
-                            if (!t.isStringLiteral(startState))
+                            if (!t.isStringLiteral(startState) && !t.isArrowFunctionExpression(startState)  && !t.isFunctionExpression(startState))
                             {
-                                throw new Error(relativePath + ": 'startState' property must be a string literal");
+                                throw new Error(relativePath + ": 'startState' property must be a string literal or function expression");
                             }
 
                             const statesNode = findMapProperty(map, "states");
@@ -808,7 +808,7 @@ module.exports = function (babel) {
                             ;
 
                             processExports.process = {
-                                startState: startState.value,
+                                startState: TakeSource(startState),
                                 states: states
                             };
                         }
