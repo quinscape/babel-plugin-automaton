@@ -1,6 +1,6 @@
 {
     "name": "babel-plugin-automaton",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "Babel plugin to extract JSON model data from ES6+ source code",
     "main": "src/index.js",
     "author": "Sven Helmberger",
