@@ -747,7 +747,9 @@ module.exports = function (babel) {
             configuration: [],
 
             process: null,
-            scope: null
+            scope: null,
+
+            extraConstants: []
         };
 
         path.traverse({
@@ -779,7 +781,6 @@ module.exports = function (babel) {
 
                         if (t.isReturnStatement(kid))
                         {
-
                             const map = kid.argument;
 
                             if (!t.isObjectExpression(map))
@@ -874,6 +875,39 @@ module.exports = function (babel) {
                 }
 
                 processExports.scope = createScopeDefinition(relativePath, declaration);
+            },
+
+            "VariableDeclaration": function (path, state) {
+
+                const {node, parent} = path;
+
+                const isExport = t.isExportNamedDeclaration(parent);
+
+                // we are only interested in root declarations or exports
+                if ( (!t.isProgram(parent) && !isExport))
+                {
+                    // ignore
+                    return;
+                }
+
+                processExports.extraConstants.push((isExport ? "export " : "") + TakeSource(node))
+            },
+            "FunctionDeclaration": function (path, state) {
+
+                const {node, parent} = path;
+
+
+                const isExport = t.isExportNamedDeclaration(parent);
+
+                // we are only interested in root declarations or exports and we ignore "initProcess"
+                if (node.id.name === "initProcess" || (!t.isProgram(parent) && !isExport))
+                {
+                    // ignore
+                    return;
+                }
+
+
+                processExports.extraConstants.push((isExport ? "export " : "") + TakeSource(node))
             }
         });
 

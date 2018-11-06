@@ -618,7 +618,8 @@ describe("Babel Automaton Plugin", function () {
                                 "code": "return foo + 1;"
                             }
                         ]
-                    }
+                    },
+                    "extraConstants": []
                 }
             }
         )
@@ -1235,13 +1236,14 @@ describe("Babel Automaton Plugin", function () {
             }
         )
     });
+
     it("extracts start transitions", function () {
 
         transform("./test-modules/apps/test/processes/start-transition/start-transition.js");
 
         const data = Data.entry("./apps/test/processes/start-transition/start-transition");
 
-        console.log(JSON.stringify(data,0, 4))
+        //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
             data,
@@ -1282,10 +1284,54 @@ describe("Babel Automaton Plugin", function () {
                             }
                         }
                     },
-                    "scope": null
+                    "scope": null,
+                    "extraConstants": []
                 }
             }
 
         )
+    });
+
+    it("extracts extra constants out of process modules", function () {
+
+        transform("./test-modules/apps/test/processes/extra-constants/extra-constants.js");
+
+        const data = Data.entry("./apps/test/processes/extra-constants/extra-constants");
+
+        //console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "automaton-js",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "Process"
+                            }
+                        ]
+                    }
+                ],
+                "processExports": {
+                    "type": "ProcessExports",
+                    "configuration": [],
+                    "process": {
+                        "startState": "\"Home\"",
+                        "states": {
+                            "Home": {}
+                        }
+                    },
+                    "scope": null,
+                    "extraConstants": [
+                        "export const EXPORTED_CONSTANT = 123456;",
+                        "export function exportedFn() {}",
+                        "const CONSTANT = \"Quux\";",
+                        "function extraFn() {}"
+                    ]
+                }
+            }        )
     });
 });
