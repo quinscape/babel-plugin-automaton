@@ -4,8 +4,7 @@
     "description": "Babel plugin to extract JSON model data from ES6+ source code",
     "main": "src/index.js",
     "author": "Sven Helmberger",
-    "license": "-",
-    "private": true,
+    "license": "Apache-2.0",
     "dependencies": {
         "babel-generator": "^6.26.1",
         "babel-runtime": "^6.26.0",
@@ -25,5 +24,21 @@
     },
     "scripts": {
         "test": "mocha --require babel-register -R spec test/"
-    }
+    },
+    "directories": {
+        "test": "test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/quinscape/babel-plugin-automaton.git"
+    },
+    "keywords": [
+        "babel",
+        "model",
+        "extraction"
+    ],
+    "bugs": {
+        "url": "https://github.com/quinscape/babel-plugin-automaton/issues"
+    },
+    "homepage": "https://github.com/quinscape/babel-plugin-automaton#readme"
 }
