@@ -1334,4 +1334,112 @@ describe("Babel Automaton Plugin", function () {
                 }
             }        )
     });
+
+    it("extracts domain models", function () {
+
+        transform("./test-modules/apps/test/domain/Foo.js");
+
+        const data = Data.entry("./apps/test/domain/Foo");
+
+        console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observable"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "computed"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "action"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "automaton-js",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "injection"
+                            }
+                        ]
+                    }
+                ],
+                "domain": {
+                    "name": "Foo",
+                    "observables": [
+                        {
+                            "type": null,
+                            "name": "id",
+                            "defaultValue": null,
+                            "description": null
+                        },
+                        {
+                            "type": null,
+                            "name": "name",
+                            "defaultValue": null,
+                            "description": null
+                        },
+                        {
+                            "type": null,
+                            "name": "created",
+                            "defaultValue": null,
+                            "description": null
+                        },
+                        {
+                            "type": null,
+                            "name": "num",
+                            "defaultValue": null,
+                            "description": null
+                        },
+                        {
+                            "type": null,
+                            "name": "description",
+                            "defaultValue": null,
+                            "description": null
+                        },
+                        {
+                            "type": null,
+                            "name": "type",
+                            "defaultValue": null,
+                            "description": null
+                        },
+                        {
+                            "type": null,
+                            "name": "owner",
+                            "defaultValue": null,
+                            "description": null
+                        }
+                    ],
+                    "actions": [],
+                    "computeds": [
+                        {
+                            "name": "short",
+                            "code": "return this.name + \":\" + this.num + \":\" + this.type;"
+                        }
+                    ],
+                    "helpers": []
+                }
+            }
+        )
+    });
+    it("extracts domain models", function () {
+
+        assert.throws(
+            () => transform("./test-modules/apps/test/domain/Bar.js"),
+            /Domain model must be named the same as the module: is 'WrongName', should be 'Bar'/
+        );
+
+    });
 });

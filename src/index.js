@@ -21,11 +21,11 @@ const NO_MATCH = {
     isComposite : null
 };
 
-const PROCESS_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/(processes\/(.*?)\/(composites\/)?)?(.*?)$/;
+const MODEL_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/(processes\/(.*?)\/(composites\/)?|(domain\/))?(.*?)$/;
 
 function matchPath(path)
 {
-    const m = PROCESS_RESOURCE_REGEX.exec(path);
+    const m = MODEL_RESOURCE_REGEX.exec(path);
     if (!m)
     {
         return NO_MATCH;
@@ -34,7 +34,8 @@ function matchPath(path)
     return {
         appName: m[1],
         processName: m[3],
-        moduleName: m[5],
+        moduleName: m[6],
+        isDomain: m[5],
         isComposite: !!m[4]
     }
 }
@@ -650,7 +651,7 @@ module.exports = function (babel) {
         return stateMap;
     }
 
-    function createScopeDefinition(relativePath, declaration)
+    function createDomainDefinition(relativePath, declaration)
     {
         const scope = {
             name: declaration.id.name,
@@ -737,6 +738,35 @@ module.exports = function (babel) {
         }
 
         return scope;
+    }
+
+    function createDomainModel(relativePath, path, moduleName)
+    {
+        let domainModel = null;
+
+        path.traverse({
+
+            "ExportDefaultDeclaration" : function (path, state) {
+
+
+                const { declaration } = path.node;
+
+                if (!t.isClassDeclaration(declaration))
+                {
+                    throw new Error("Default domain model default export must be class")
+                }
+
+                domainModel = createDomainDefinition(relativePath, declaration);
+
+                if (domainModel.name !== moduleName)
+                {
+                    throw new Error("Domain model must be named the same as the module: is '" + domainModel.name + "', should be '" + moduleName + "'");
+                }
+            }
+        });
+
+        return domainModel;
+
     }
 
     function createProcessExports(relativePath, path)
@@ -874,7 +904,7 @@ module.exports = function (babel) {
                     throw new Error("Default process export must be scope class")
                 }
 
-                processExports.scope = createScopeDefinition(relativePath, declaration);
+                processExports.scope = createDomainDefinition(relativePath, declaration);
             },
 
             "VariableDeclaration": function (path, state) {
@@ -933,7 +963,7 @@ module.exports = function (babel) {
 
                 if (SCOPE_NAMES.indexOf(node.id.name) >= 0)
                 {
-                    scopes[decapitalize(node.id.name)] = createScopeDefinition(relativePath, path.node)
+                    scopes[decapitalize(node.id.name)] = createDomainDefinition(relativePath, path.node)
                 }
             }
         });
@@ -1035,7 +1065,7 @@ module.exports = function (babel) {
                 const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
 
-                const { appName, processName, moduleName, isComposite } = matchPath(relativePath);
+                const { appName, processName, moduleName, isComposite, isDomain } = matchPath(relativePath);
 
                 //console.log({ appName, processName, moduleName, isComposite });
 
@@ -1052,8 +1082,11 @@ module.exports = function (babel) {
                         scopes
                     );
                 }
+                else if (!processName && isDomain)
+                {
+                    Data.entry(relativePath, true).domain = createDomainModel(relativePath, path, moduleName)
+                }
             }
         }
     };
 };
-
