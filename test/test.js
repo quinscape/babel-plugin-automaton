@@ -1341,7 +1341,7 @@ describe("Babel Automaton Plugin", function () {
 
         const data = Data.entry("./apps/test/domain/Foo");
 
-        console.log(JSON.stringify(data,0, 4))
+        //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
             data,
