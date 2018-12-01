@@ -600,7 +600,16 @@ describe("Babel Automaton Plugin", function () {
                                 "params": [
                                     "customers"
                                 ],
-                                "code": "this.customers = customers;"
+                                "code": "this.customers = customers;",
+                                "bound": false
+                            },
+                            {
+                                "name": "updateCustomers2",
+                                "params": [
+                                    "customers"
+                                ],
+                                "code": "this.customers = customers;",
+                                "bound": true
                             }
                         ],
                         "computeds": [
@@ -1183,7 +1192,8 @@ describe("Babel Automaton Plugin", function () {
                             "params": [
                                 "s"
                             ],
-                            "code": "this.configValue = s;"
+                            "code": "this.configValue = s;",
+                            "bound": false
                         }
                     ],
                     "computeds": [],
@@ -1205,7 +1215,8 @@ describe("Babel Automaton Plugin", function () {
                             "params": [
                                 "n"
                             ],
-                            "code": "this.configValue = n;"
+                            "code": "this.configValue = n;",
+                            "bound": false
                         }
                     ],
                     "computeds": [],
@@ -1227,7 +1238,8 @@ describe("Babel Automaton Plugin", function () {
                             "params": [
                                 "f"
                             ],
-                            "code": "this.configValue = f;"
+                            "code": "this.configValue = f;",
+                            "bound": false
                         }
                     ],
                     "computeds": [],

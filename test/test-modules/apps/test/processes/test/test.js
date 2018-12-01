@@ -68,6 +68,12 @@ export default class TestScope {
         this.customers = customers;
     }
 
+    @action.bound
+    updateCustomers2(customers)
+    {
+        this.customers = customers;
+    }
+
     @computed
     get rowCount()
     {

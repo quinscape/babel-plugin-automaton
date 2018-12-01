@@ -485,17 +485,19 @@ module.exports = function (babel) {
             }
 
             return {
-                name: expression.name
+                name: TakeSource(expression)
             }
         });
     }
 
     function findDecorator(decorators, name)
     {
+        const names = Array.isArray(name) ? name : [name];
+
         for (let i = 0; i < decorators.length; i++)
         {
             const decorator = decorators[i];
-            if (decorator.name === name)
+            if (names.indexOf(decorator.name) >= 0)
             {
                 return decorator;
             }
@@ -693,7 +695,8 @@ module.exports = function (babel) {
             else if (t.isClassMethod(kid))
             {
 
-                if (findDecorator(decorators, "action"))
+                const deco = findDecorator(decorators, ["action", "action.bound"]);
+                if (deco)
                 {
                     const actionName = kid.key.name;
                     if (kid.kind !== "method")
@@ -704,7 +707,8 @@ module.exports = function (babel) {
                     scope.actions.push({
                         name: actionName,
                         params: transform(kid.params, TakeName),
-                        code: transform(kid.body.body, TakeSource).join("\n")
+                        code: transform(kid.body.body, TakeSource).join("\n"),
+                        bound: deco.name === "action.bound"
                     })
                 }
                 else if (findDecorator(decorators, "computed"))
