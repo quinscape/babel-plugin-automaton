@@ -554,6 +554,10 @@ module.exports = function (babel) {
             }
             return out;
         }
+        else if (t.isBooleanLiteral(node))
+        {
+            return node.value;
+        }
         else if (t.isMemberExpression(node) && node.object.name === "scope")
         {
             return {
@@ -599,6 +603,13 @@ module.exports = function (babel) {
         );
     }
 
+    const VALID_TRANSITION_KEYS = {
+        "action" : true,
+        "to" : true,
+        "discard" : true,
+        "confirmation" : true
+    };
+
     function validateStateMap(relativePath, stateMap)
     {
         if (!stateMap || typeof stateMap !== "object")
@@ -627,12 +638,12 @@ module.exports = function (babel) {
                             throw new Error(relativePath + ", state '" + stateName + "', transition = '" + transitionName + "': value must be an object");
                         }
 
-                        const { to, action} = transitionObject;
+                        const { to, action, discard, confirmation } = transitionObject;
 
-                        const keys = Object.keys(transitionObject);
-                        if (keys.length > 2)
+                        const invalidKeys = Object.keys(transitionObject).filter( n => !VALID_TRANSITION_KEYS.hasOwnProperty(n));
+                        if (invalidKeys.length > 0)
                         {
-                            throw new Error(relativePath + ", state '" + stateName + "', Invalid transition key(s): " + keys.join(","));
+                            throw new Error(relativePath + ", state '" + stateName + "', Invalid transition key(s): " + invalidKeys.join(","));
                         }
 
                         if (!to && !action)
@@ -645,6 +656,14 @@ module.exports = function (babel) {
                             throw new Error(relativePath + ", state '" + stateName + "', Invalid action object: " + action);
                         }
 
+                        if (discard !== undefined && discard !== true && discard !== false)
+                        {
+                            throw new Error(relativePath + ", state '" + stateName + "', Invalid discard value: " + discard);
+                        }
+                        if ( confirmation && (typeof confirmation !== "object" || confirmation.type !== "Action"))
+                        {
+                            throw new Error(relativePath + ", state '" + stateName + "', Invalid confirmation value: " + discard);
+                        }
                     }
                 }
             }

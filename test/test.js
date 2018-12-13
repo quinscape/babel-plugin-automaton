@@ -1444,4 +1444,117 @@ describe("Babel Automaton Plugin", function () {
         );
 
     });
+
+
+    it("supports discard and confirmation on transitions", function () {
+
+        transform("./test-modules/apps/test/processes/transition-control/transition-control.js");
+
+        const data = Data.entry("./apps/test/processes/transition-control/transition-control");
+
+        //console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "observable"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "computed"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "action"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "../components/CustomLayout",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "CustomLayout"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "automaton-js",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "injection"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "type"
+                            }
+                        ]
+                    }
+                ],
+                "processExports": {
+                    "type": "ProcessExports",
+                    "configuration": [],
+                    "process": {
+                        "startState": "\"FooList\"",
+                        "states": {
+                            "FooList": {
+                                "delete": {
+                                    "discard": true,
+                                    "confirmation": {
+                                        "type": "Action",
+                                        "params": [
+                                            "ctx"
+                                        ],
+                                        "code": "`Delete ${ctx.name} ?`"
+                                    },
+                                    "to": "FooList",
+                                    "action": {
+                                        "type": "Action",
+                                        "params": [],
+                                        "code": "scope.addTodo()"
+                                    }
+                                },
+                                "cancel": {
+                                    "discard": true,
+                                    "to": "FooList",
+                                    "action": {
+                                        "type": "Action",
+                                        "params": [],
+                                        "code": "scope.addTodo()"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "scope": {
+                        "name": "TestScope",
+                        "observables": [],
+                        "actions": [
+                            {
+                                "name": "addToDo",
+                                "params": [
+                                    "ctx"
+                                ],
+                                "code": "",
+                                "bound": false
+                            }
+                        ],
+                        "computeds": [],
+                        "helpers": []
+                    },
+                    "extraConstants": []
+                }
+            }
+        )
+    });
 });
