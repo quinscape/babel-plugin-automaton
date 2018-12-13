@@ -7,7 +7,6 @@ import { type } from "automaton-js";
 
 export class ApplicationScope
 {
-    @type("String")
     @observable configValue = "";
 
     @action appScopeAction(s)
@@ -18,7 +17,6 @@ export class ApplicationScope
 
 export class UserScope
 {
-    @type("Int")
     @observable configValue = 1283;
 
     @action userScopeAction(n)
@@ -30,7 +28,6 @@ export class UserScope
 
 export class SessionScope
 {
-    @type("Boolean")
     @observable configValue = false;
 
     @action userScopeAction(f)

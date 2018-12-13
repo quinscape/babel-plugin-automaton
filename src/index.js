@@ -679,13 +679,9 @@ module.exports = function (babel) {
 
                 if (findDecorator(decorators, "observable"))
                 {
-                    const typeDeco = findDecorator(decorators, "type");
-
                     //console.log("OBSERVABLE",   JSON.stringify(kid,0,4), "\n----");
-
                     const comments = extractLeadingComments(kid.decorators[0]);
                     scope.observables.push({
-                        type: typeDeco && JSON.parse(typeDeco.arguments[0]),
                         name: kid.key.name,
                         defaultValue: TakeSource(kid.value),
                         description: comments

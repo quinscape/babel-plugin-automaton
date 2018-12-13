@@ -47,7 +47,6 @@ export function initProcess(process, scope)
 export default class TestScope {
 
     /* Current customers */
-    @type("PagedCustomer")
     @observable customers = injection(
         // language=GraphQL
             `{

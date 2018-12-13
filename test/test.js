@@ -588,7 +588,6 @@ describe("Babel Automaton Plugin", function () {
                         "name": "TestScope",
                         "observables": [
                             {
-                                "type": "PagedCustomer",
                                 "name": "customers",
                                 "defaultValue": "injection( // language=GraphQL\n`{\n                getCustomers{\n                    rows{\n                        id\n                        number\n                        salutation\n                        name\n                    }\n                }\n            }`)",
                                 "description": "Current customers"
@@ -1180,7 +1179,6 @@ describe("Babel Automaton Plugin", function () {
                     "name": "ApplicationScope",
                     "observables": [
                         {
-                            "type": "String",
                             "name": "configValue",
                             "defaultValue": "\"\"",
                             "description": null
@@ -1203,7 +1201,6 @@ describe("Babel Automaton Plugin", function () {
                     "name": "UserScope",
                     "observables": [
                         {
-                            "type": "Int",
                             "name": "configValue",
                             "defaultValue": "1283",
                             "description": null
@@ -1226,7 +1223,6 @@ describe("Babel Automaton Plugin", function () {
                     "name": "SessionScope",
                     "observables": [
                         {
-                            "type": "Boolean",
                             "name": "configValue",
                             "defaultValue": "false",
                             "description": null
@@ -1392,43 +1388,36 @@ describe("Babel Automaton Plugin", function () {
                     "name": "Foo",
                     "observables": [
                         {
-                            "type": null,
                             "name": "id",
                             "defaultValue": null,
                             "description": null
                         },
                         {
-                            "type": null,
                             "name": "name",
                             "defaultValue": null,
                             "description": null
                         },
                         {
-                            "type": null,
                             "name": "created",
                             "defaultValue": null,
                             "description": null
                         },
                         {
-                            "type": null,
                             "name": "num",
                             "defaultValue": null,
                             "description": null
                         },
                         {
-                            "type": null,
                             "name": "description",
                             "defaultValue": null,
                             "description": null
                         },
                         {
-                            "type": null,
                             "name": "type",
                             "defaultValue": null,
                             "description": null
                         },
                         {
-                            "type": null,
                             "name": "owner",
                             "defaultValue": null,
                             "description": null
