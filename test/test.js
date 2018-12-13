@@ -1435,7 +1435,8 @@ describe("Babel Automaton Plugin", function () {
             }
         )
     });
-    it("extracts domain models", function () {
+    
+    it("detects wrongly named domain models", function () {
 
         assert.throws(
             () => transform("./test-modules/apps/test/domain/Bar.js"),
