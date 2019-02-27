@@ -165,9 +165,29 @@ function decapitalize(s)
     return s.charAt(0).toLowerCase() + s.substr(1);
 }
 
+
+
 module.exports = function (babel) {
 
     const t = babel.types;
+
+    /**
+     * Returns true if the given node is an arrow function <code>props => { }</code>
+     * @param node
+     * @return {boolean}
+     */
+    function isReactArrowFunctionComponent(node)
+    {
+        // must be arrow function
+        if (!t.isArrowFunctionExpression(node))
+        {
+            return false;
+        }
+
+        // accepting exactly one parameter named props
+        return node.params.length === 1 && node.params[0].name === "props";
+    }
+
 
     function recursiveIdentifierOrPatternRule(node)
     {
@@ -399,68 +419,50 @@ module.exports = function (babel) {
     /**
      * Handles the view components and form components that are simplified composite react components.
      *
-     * @param path
+     * @param node
      * @return {{type: string, constants: Array, root: null}}
      */
-    function createCompositeComponentDefinition(path)
+    function createCompositeComponentDefinition(node)
     {
         const classDeclaration = {
             type: "CompositeComponent",
             constants: [],
-            root: null,
-            decorators: transformDecorators(path.node.decorators)
+            root: null
         };
 
-        //console.log("CLASS", JSON.stringify(classDeclaration));
+        // shallow traversal over render body only
+        const { body } = node;
 
-        path.traverse({
-            "ClassMethod": function (path, state) {
-                const { node } = path;
-                if (node.kind === "method")
+        if (t.isBlockStatement(body))
+        {
+            const kids = body.body;
+            for (let i = 0; i < kids.length; i++)
+            {
+                const kid = kids[i];
+
+                if (t.isVariableDeclaration(kid))
                 {
-
-                    const methodName = getNameOrValue(node.key);
-                    if (methodName !== "render")
-                    {
-                        throw new Error("Composite components should only contain a render method: Found '" + methodName + "' in " + path + JS_EXTENSION);
-                    }
-
-                    // shallow traversal over render body only
-                    const { body } = node;
-
-                    if (t.isBlockStatement(body))
-                    {
-                        const kids = body.body;
-                        for (let i = 0; i < kids.length; i++)
-                        {
-                            const kid = kids[i];
-
-                            if (t.isVariableDeclaration(kid))
-                            {
-                                classDeclaration.constants.push(
-                                    transform(kid, {
-                                        kind: true,
-                                        declarations: {
-                                            id: recursiveIdentifierOrPatternRule,
-                                            init: TakeSource
-                                        }
-                                    })
-                                )
+                    classDeclaration.constants.push(
+                        transform(kid, {
+                            kind: true,
+                            declarations: {
+                                id: recursiveIdentifierOrPatternRule,
+                                init: TakeSource
                             }
-                            else if (t.isReturnStatement(kid))
-                            {
-                                classDeclaration.root = transform(kid.argument, recursiveJSX)
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // direct return
-                        classDeclaration.root = transform(body, recursiveJSX)
-                    }
+                        })
+                    )
+                }
+                else if (t.isReturnStatement(kid))
+                {
+                    classDeclaration.root = transform(kid.argument, recursiveJSX)
                 }
             }
-        });
+        }
+        else
+        {
+            // direct return
+            classDeclaration.root = transform(body, recursiveJSX)
+        }
 
         return classDeclaration;
     }
@@ -965,9 +967,9 @@ module.exports = function (babel) {
     }
 
     const SCOPE_NAMES = [
-          "ApplicationScope",
-          "UserScope",
-          "SessionScope"
+        "ApplicationScope",
+        "UserScope",
+        "SessionScope"
     ];
 
     function createScopeDefinitions(relativePath, path, state)
@@ -1049,7 +1051,7 @@ module.exports = function (babel) {
                 }
             },
 
-            "ClassDeclaration": function (path, state) {
+            "VariableDeclaration": function (path, state) {
                 const { node } = path;
                 const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
@@ -1058,9 +1060,9 @@ module.exports = function (babel) {
 
                 //console.log({ appName, processName, moduleName, isComposite });
 
-                if (processName && isComposite && moduleName === node.id.name)
+                if (processName && isComposite && moduleName === node.declarations[0].id.name && isReactArrowFunctionComponent(node.declarations[0].init))
                 {
-                    Data.entry(relativePath, true).composite = createCompositeComponentDefinition(path);
+                    Data.entry(relativePath, true).composite = createCompositeComponentDefinition(node.declarations[0].init);
                 }
             },
 

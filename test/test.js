@@ -68,11 +68,12 @@ describe("Babel Automaton Plugin", function () {
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "mobx",
+                        "source": "mobx-react-lite",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "name": "observer"
+                                "name": "fnObserver",
+                                "aliasOf": "observer"
                             }
                         ]
                     }
@@ -106,14 +107,9 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ],
                         "type": "JSXElement"
-                    },
-                    "decorators": [
-                        {
-                            "name": "observer"
-                        }
-                    ]
+                    }
                 },
-                "export": "SimpleComposite"
+                "export": "fnObserver(SimpleComposite)"
             }
         )
 
@@ -125,7 +121,9 @@ describe("Babel Automaton Plugin", function () {
         transform("./test-modules/apps/test/processes/test/composites/RenderFunctionChild.js");
 
         const data = Data.entry("./apps/test/processes/test/composites/RenderFunctionChild");
+
         //console.log(JSON.stringify(data,0, 4))
+
         assert.deepEqual(
             data,
             {
@@ -152,11 +150,12 @@ describe("Babel Automaton Plugin", function () {
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "mobx",
+                        "source": "mobx-react-lite",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "name": "observer"
+                                "name": "fnObserver",
+                                "aliasOf": "observer"
                             }
                         ]
                     }
@@ -192,7 +191,7 @@ describe("Babel Automaton Plugin", function () {
                                             }
                                         ]
                                     },
-                                    "init": "this.props"
+                                    "init": "props"
                                 }
                             ]
                         }
@@ -239,14 +238,9 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ],
                         "type": "JSXElement"
-                    },
-                    "decorators": [
-                        {
-                            "name": "observer"
-                        }
-                    ]
+                    }
                 },
-                "export": "RenderFunctionChild"
+                "export": "fnObserver(RenderFunctionChild)"
             }
         )
 
@@ -258,6 +252,7 @@ describe("Babel Automaton Plugin", function () {
         transform("./test-modules/apps/test/processes/test/composites/BodylessRenderFunctionChild.js");
 
         const data = Data.entry("./apps/test/processes/test/composites/BodylessRenderFunctionChild");
+
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
@@ -286,11 +281,12 @@ describe("Babel Automaton Plugin", function () {
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "mobx",
+                        "source": "mobx-react-lite",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "name": "observer"
+                                "name": "fnObserver",
+                                "aliasOf": "observer"
                             }
                         ]
                     }
@@ -326,7 +322,7 @@ describe("Babel Automaton Plugin", function () {
                                             }
                                         ]
                                     },
-                                    "init": "this.props"
+                                    "init": "props"
                                 }
                             ]
                         }
@@ -358,14 +354,9 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ],
                         "type": "JSXElement"
-                    },
-                    "decorators": [
-                        {
-                            "name": "observer"
-                        }
-                    ]
+                    }
                 },
-                "export": "BodylessRenderFunctionChild"
+                "export": "fnObserver(BodylessRenderFunctionChild)"
             }
         )
 
@@ -376,6 +367,7 @@ describe("Babel Automaton Plugin", function () {
         transform("./test-modules/apps/test/processes/test/composites/RenderFunctionAttr.js");
 
         const data = Data.entry("./apps/test/processes/test/composites/RenderFunctionAttr");
+
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
@@ -408,8 +400,8 @@ describe("Babel Automaton Plugin", function () {
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "aliasOf": "Widget",
-                                "name": "RenamedWidget"
+                                "name": "RenamedWidget",
+                                "aliasOf": "Widget"
                             },
                             {
                                 "type": "ImportSpecifier",
@@ -419,11 +411,12 @@ describe("Babel Automaton Plugin", function () {
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "mobx",
+                        "source": "mobx-react-lite",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "name": "observer"
+                                "name": "fnObserver",
+                                "aliasOf": "observer"
                             }
                         ]
                     }
@@ -481,14 +474,9 @@ describe("Babel Automaton Plugin", function () {
                         ],
                         "kids": [],
                         "type": "JSXElement"
-                    },
-                    "decorators": [
-                        {
-                            "name": "observer"
-                        }
-                    ]
+                    }
                 },
-                "export": "RenderFunctionAttr"
+                "export": "fnObserver(RenderFunctionAttr)"
             }
         )
     });
@@ -639,6 +627,7 @@ describe("Babel Automaton Plugin", function () {
         transform("./test-modules/apps/test/processes/test/composites/FormComposite.js");
 
         const data = Data.entry("./apps/test/processes/test/composites/FormComposite");
+
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
@@ -652,6 +641,17 @@ describe("Babel Automaton Plugin", function () {
                             {
                                 "type": "ImportDefaultSpecifier",
                                 "name": "React"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx-react-lite",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "fnObserver",
+                                "aliasOf": "observer"
                             }
                         ]
                     },
@@ -781,69 +781,7 @@ describe("Babel Automaton Plugin", function () {
                                             }
                                         ]
                                     },
-                                    "init": "this.props"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "VariableDeclaration",
-                            "kind": "const",
-                            "declarations": [
-                                {
-                                    "type": "VariableDeclarator",
-                                    "id": {
-                                        "type": "ObjectPattern",
-                                        "properties": [
-                                            {
-                                                "type": "ObjectProperty",
-                                                "key": "formikProps",
-                                                "value": {
-                                                    "type": "Identifier",
-                                                    "name": "formikProps"
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "init": "formConfig"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "VariableDeclaration",
-                            "kind": "const",
-                            "declarations": [
-                                {
-                                    "type": "VariableDeclarator",
-                                    "id": {
-                                        "type": "ObjectPattern",
-                                        "properties": [
-                                            {
-                                                "type": "ObjectProperty",
-                                                "key": "isValid",
-                                                "value": {
-                                                    "type": "Identifier",
-                                                    "name": "isValid"
-                                                }
-                                            },
-                                            {
-                                                "type": "ObjectProperty",
-                                                "key": "values",
-                                                "value": {
-                                                    "type": "Identifier",
-                                                    "name": "values"
-                                                }
-                                            },
-                                            {
-                                                "type": "ObjectProperty",
-                                                "key": "errors",
-                                                "value": {
-                                                    "type": "Identifier",
-                                                    "name": "errors"
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "init": "formikProps"
+                                    "init": "props"
                                 }
                             ]
                         },
@@ -857,7 +795,7 @@ describe("Babel Automaton Plugin", function () {
                                         "type": "Identifier",
                                         "name": "canAccess"
                                     },
-                                    "init": "authentication.id === values.ownerId || hasRole(\"ROLE_ADMIN\")"
+                                    "init": "authentication.id === formConfig.root.ownerId || hasRole(\"ROLE_ADMIN\")"
                                 }
                             ]
                         }
@@ -1024,10 +962,9 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ],
                         "type": "JSXElement"
-                    },
-                    "decorators": []
+                    }
                 },
-                "export": "withForm(FormComposite, { type: \"FooInput\" })"
+                "export": "withForm(fnObserver(FormComposite), { type: \"FooInput\" })"
             }
         )
     });
@@ -1037,6 +974,7 @@ describe("Babel Automaton Plugin", function () {
         transform("./test-modules/apps/test/processes/test/composites/ConditionalComponent.js");
 
         const data = Data.entry("./apps/test/processes/test/composites/ConditionalComponent");
+
         //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
@@ -1055,11 +993,12 @@ describe("Babel Automaton Plugin", function () {
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "mobx",
+                        "source": "mobx-react-lite",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "name": "observer"
+                                "name": "fnObserver",
+                                "aliasOf": "observer"
                             }
                         ]
                     }
@@ -1095,7 +1034,7 @@ describe("Babel Automaton Plugin", function () {
                                             }
                                         ]
                                     },
-                                    "init": "this.props"
+                                    "init": "props"
                                 }
                             ]
                         }
@@ -1126,14 +1065,9 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ],
                         "type": "JSXElement"
-                    },
-                    "decorators": [
-                        {
-                            "name": "observer"
-                        }
-                    ]
+                    }
                 },
-                "export": "ConditionalComponent"
+                "export": "fnObserver(ConditionalComponent)"
             }
         )
     });

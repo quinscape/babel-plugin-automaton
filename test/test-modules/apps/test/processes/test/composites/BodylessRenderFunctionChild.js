@@ -2,31 +2,27 @@
 import React from "react"
 import { Widget } from "../../components/ui"
 
-import { observer } from "mobx"
+import { observer as fnObserver } from "mobx-react-lite"
 
-@observer
-class BodylessRenderFunctionChild extends React.Component {
+const BodylessRenderFunctionChild = props => {
 
-    render()
-    {
-        const { env : { contextPath : length } } = this.props;
+    const { env : { contextPath : length } } = props;
 
-        return (
-            <Widget>
-                {
-                    context =>
-                        (
-                            <em>
-                                {
-                                    "/xxx/" + context + "/" + length
-                                }
-                            </em>
-                        )
-                }
-            </Widget>
-        )
-    }
-}
+    return (
+        <Widget>
+            {
+                context =>
+                    (
+                        <em>
+                            {
+                                "/xxx/" + context + "/" + length
+                            }
+                        </em>
+                    )
+            }
+        </Widget>
+    )
+};
 
-export default BodylessRenderFunctionChild
+export default fnObserver(BodylessRenderFunctionChild)
 

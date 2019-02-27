@@ -1,24 +1,20 @@
 // noinspection NpmUsedModulesInstalled
 import React from "react"
 
-import { observer } from "mobx"
+import { observer as fnObserver } from "mobx-react-lite"
 
-@observer
-class ConditionalComponent extends React.Component {
+const ConditionalComponent = props => {
 
-    render()
-    {
-        const { env  : { contextPath : cp } } = this.props;
+    const { env  : { contextPath : cp } } = props;
 
-        return (
-            <div>
-                {
-                    (cp === "/foo" || cp === "") && <h1> ConditionalComponent </h1>
-                }
-            </div>
-        )
-    }
+    return (
+        <div>
+            {
+                (cp === "/foo" || cp === "") && <h1> ConditionalComponent </h1>
+            }
+        </div>
+    )
 }
 
-export default ConditionalComponent
+export default fnObserver(ConditionalComponent)
 

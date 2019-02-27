@@ -1,4 +1,7 @@
 import React from "react"
+
+import { observer as fnObserver } from "mobx-react-lite"
+
 import cx from "classnames"
 import Field from "domainql-form/lib/Field";
 import TextArea from "domainql-form/lib/TextArea";
@@ -9,60 +12,53 @@ import config from "../../services/config";
 import hasRole from "../../util/hasRole";
 
 
-class FormComposite extends React.Component {
+const FormComposite = props => {
 
-    render()
-    {
-        const { authentication } = config();
+    const { authentication } = config();
 
-        const { formConfig } = this.props;
+    const { formConfig } = props;
 
-        const { formikProps } = formConfig;
+    const canAccess = authentication.id === formConfig.root.ownerId || hasRole("ROLE_ADMIN");
 
-        const {isValid, values, errors} = formikProps;
+    return (
+        <React.Fragment>
+            <GlobalErrors/>
+            <Field name="name"/>
+            <TextArea name="description"/>
+            <Field name="num"/>
 
-        // for our badly secured frontend, we just change the color of the button and do
-        // not disable it like we should.
-        const canAccess = authentication.id === values.ownerId || hasRole("ROLE_ADMIN");
-
-        return (
-            <React.Fragment>
-                <GlobalErrors/>
-                <Field name="name"/>
-                <TextArea name="description"/>
-                <Field name="num"/>
-
-                <div>
-                    <button
-                        type="reset"
-                        className="btn btn-secondary"
-                    >
-                        <Icon className="fa-recycle"/>
-                        { " " }
-                        Reset
-                    </button>
+            <div>
+                <button
+                    type="reset"
+                    className="btn btn-secondary"
+                >
+                    <Icon className="fa-recycle"/>
                     { " " }
-                    <button
-                        type="submit"
-                        className={
-                            cx(
-                                "btn",
-                                canAccess ? "btn-success" : "btn-danger"
-                            )
-                        }
-                    >
-                        <Icon className="fa-save"/>
-                        { " " }
-                        Save
-                    </button>
-                </div>
-            </React.Fragment>
-        );
-    }
+                    Reset
+                </button>
+                { " " }
+                <button
+                    type="submit"
+                    className={
+                        cx(
+                            "btn",
+                            canAccess ? "btn-success" : "btn-danger"
+                        )
+                    }
+                >
+                    <Icon className="fa-save"/>
+                    { " " }
+                    Save
+                </button>
+            </div>
+        </React.Fragment>
+    );
 }
 
 export default withForm(
-    FormComposite,
+    fnObserver(
+        FormComposite
+    ),
     {
         type: "FooInput"
     }

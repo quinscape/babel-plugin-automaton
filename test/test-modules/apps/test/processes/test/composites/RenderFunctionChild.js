@@ -2,35 +2,31 @@
 import React from "react"
 import { Widget } from "../../components/ui"
 
-import { observer } from "mobx"
+import { observer as fnObserver } from "mobx-react-lite"
 
-@observer
-class RenderFunctionChild extends React.Component {
+const RenderFunctionChild = props => {
 
-    render()
-    {
-        const { env : { contextPath : length } } = this.props;
+    const { env : { contextPath : length } } = props;
 
-        return (
-            <Widget>
-                {
-                    context => {
+    return (
+        <Widget>
+            {
+                context => {
 
-                        const uri = "/xxx/" + context + "/" + length;
+                    const uri = "/xxx/" + context + "/" + length;
 
-                        return (
-                            <em>
-                                {
-                                    uri
-                                }
-                            </em>
-                        )
-                    }
+                    return (
+                        <em>
+                            {
+                                uri
+                            }
+                        </em>
+                    )
                 }
-            </Widget>
-        )
-    }
+            }
+        </Widget>
+    )
 }
 
-export default RenderFunctionChild
+export default fnObserver(RenderFunctionChild)
 

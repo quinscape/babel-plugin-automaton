@@ -4,32 +4,28 @@ import { i18n } from "automaton-js"
 import { Widget as RenamedWidget, Button } from "../../components/ui"
 
 
-import { observer } from "mobx"
+import { observer as fnObserver } from "mobx-react-lite"
 
-@observer
-class RenderFunctionAttr extends React.Component {
+const RenderFunctionAttr = props =>  {
 
-    render()
-    {
-        return (
-            <RenamedWidget
-                toolbar={
-                    context => {
-                        return (
-                            <div>
-                                <Button
-                                    transition="do-stuff"
-                                    text={ i18n("Do Stuff", context) }
-                                />
-                            </div>
-                        )
-                    }
+    return (
+        <RenamedWidget
+            toolbar={
+                context => {
+                    return (
+                        <div>
+                            <Button
+                                transition="do-stuff"
+                                text={ i18n("Do Stuff", context) }
+                            />
+                        </div>
+                    )
                 }
-            >
-            </RenamedWidget>
-        )
-    }
+            }
+        >
+        </RenamedWidget>
+    )
 }
 
-export default RenderFunctionAttr
+export default fnObserver(RenderFunctionAttr)
 
