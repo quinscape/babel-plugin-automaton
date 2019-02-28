@@ -1491,4 +1491,154 @@ describe("Babel Automaton Plugin", function () {
             }
         )
     });
+
+    // Additional test for array destructing since we first left that out and introduced it later for hooks
+
+    it("supports array destructing in composites", function () {
+
+        transform("./test-modules/apps/test/processes/test/composites/ArrayDestructingConstant.js");
+
+        const data = Data.entry("./apps/test/processes/test/composites/ArrayDestructingConstant");
+
+        console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "react",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "React"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "useState"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "classnames",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "cx"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "mobx-react-lite",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "fnObserver",
+                                "aliasOf": "observer"
+                            }
+                        ]
+                    }
+                ],
+                "composite": {
+                    "type": "CompositeComponent",
+                    "constants": [
+                        {
+                            "type": "VariableDeclaration",
+                            "kind": "const",
+                            "declarations": [
+                                {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "ArrayPattern",
+                                        "elements": [
+                                            {
+                                                "type": "Identifier",
+                                                "name": "flag"
+                                            },
+                                            {
+                                                "type": "Identifier",
+                                                "name": "setFlag"
+                                            }
+                                        ]
+                                    },
+                                    "init": "useState(false)"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "VariableDeclaration",
+                            "kind": "const",
+                            "declarations": [
+                                {
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "ArrayPattern",
+                                        "elements": [
+                                            {
+                                                "type": "Identifier",
+                                                "name": "a"
+                                            },
+                                            {
+                                                "type": "ObjectPattern",
+                                                "properties": [
+                                                    {
+                                                        "type": "ObjectProperty",
+                                                        "key": "b",
+                                                        "value": {
+                                                            "type": "Identifier",
+                                                            "name": "c"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "init": "props"
+                                }
+                            ]
+                        }
+                    ],
+                    "root": {
+                        "name": "div",
+                        "attrs": [],
+                        "kids": [
+                            {
+                                "name": "button",
+                                "attrs": [
+                                    {
+                                        "type": "JSXAttribute",
+                                        "name": "className",
+                                        "value": {
+                                            "type": "JSXExpressionContainer",
+                                            "code": "{cx(\"btn\", flag ? \"btn-success\" : \"btn-danger\")}"
+                                        }
+                                    },
+                                    {
+                                        "type": "JSXAttribute",
+                                        "name": "onClick",
+                                        "value": {
+                                            "type": "JSXExpressionContainer",
+                                            "code": "{() => setFlag(!flag)}"
+                                        }
+                                    }
+                                ],
+                                "kids": [
+                                    {
+                                        "type": "JSXText",
+                                        "value": "ArrayDestructingConstant"
+                                    }
+                                ],
+                                "type": "JSXElement"
+                            }
+                        ],
+                        "type": "JSXElement"
+                    }
+                },
+                "export": "fnObserver(ArrayDestructingConstant)"
+            }
+        )
+    });
 });

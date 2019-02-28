@@ -201,6 +201,9 @@ module.exports = function (babel) {
                         key: TakeName,
                         value: recursiveIdentifierOrPatternRule
                     }
+                },
+                ArrayPattern: {
+                    elements: recursiveIdentifierOrPatternRule
                 }
             })
         )(node);
