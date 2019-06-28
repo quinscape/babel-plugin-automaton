@@ -1,28 +1,27 @@
 const assert = require("power-assert");
-const babel = require("babel-core");
+const babel = require("@babel/core");
 const fs = require("fs");
 const path = require("path");
 
 const Data = require("../data");
 
 const OPTIONS = {
-
-    presets: [
-        "babel-preset-es2015",
-        "babel-preset-react",
-        "babel-preset-stage-1"
-
+    "presets": [
+        "@babel/preset-react",
+        "@babel/preset-env"
     ],
-    plugins: [
-        [
-            require("../src/index")(babel),
-            {
-                "debug": false
-            }
-        ],
-        "transform-decorators-legacy"
-    ],
-    sourceRoot: "./test-modules/"
+
+    "plugins" : [
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+            [
+                require("../src/index")(babel),
+                {
+                    sourceRoot: "test-modules/",
+                    "debug": true
+                }
+            ],
+    ]
 };
 
 function transform(relPath)

@@ -6,20 +6,20 @@
     "author": "Sven Helmberger",
     "license": "Apache-2.0",
     "dependencies": {
-        "babel-generator": "^6.26.1",
-        "babel-runtime": "^6.26.0",
+        "@babel/runtime": "^7.4.5",
+        "@babel/generator": "^7.4.4",
         "shelljs": "^0.8.2"
     },
     "devDependencies": {
-        "babel-cli": "^6.26.0",
-        "babel-core": "^6.26.3",
-        "babel-plugin-espower": "^3.0.0",
-        "babel-plugin-transform-decorators-legacy": "^1.3.5",
-        "babel-preset-es2015": "^6.24.1",
-        "babel-preset-react": "^6.24.1",
-        "babel-preset-stage-1": "^6.24.1",
-        "babel-register": "^6.26.0",
-        "mocha": "^5.2.0",
+        "@babel/cli": "^7.4.4",
+        "@babel/core": "^7.4.5",
+        "@babel/preset-env": "^7.4.5",
+        "@babel/preset-react": "^7.0.0",
+        "@babel/register": "^7.4.4",
+        "babel-plugin-espower": "^3.0.1",
+        "@babel/plugin-proposal-decorators": "^7.4.4",
+        "@babel/plugin-proposal-class-properties": "^7.4.4",
+        "mocha": "^6.1.4",
         "power-assert": "^1.6.1"
     },
     "scripts": {

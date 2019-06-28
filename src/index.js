@@ -5,7 +5,7 @@ const { transform, Switch, Any } = require("./transform");
 
 const Data = require("../data");
 
-const generateSource = require("babel-generator").default;
+const generateSource = require("@babel/generator").default;
 
 const { preprocess, isRedundantJSXText } = require("./preprocess");
 
@@ -25,7 +25,9 @@ const MODEL_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/(processes\/(.*?)\/(composites\/
 
 function matchPath(path)
 {
+
     const m = MODEL_RESOURCE_REGEX.exec(path);
+    //console.log("matchPath", path, "=>", m);
     if (!m)
     {
         return NO_MATCH;
@@ -40,8 +42,16 @@ function matchPath(path)
     }
 }
 
+var SLASH_RE = new RegExp("\\" + nodeJsPath.sep, "g");
 function strip(path, sourceRoot)
 {
+    if (nodeJsPath.sep !== "/")
+    {
+        path = path.replace( SLASH_RE, "/")
+    }
+
+    //console.log("STRIP", path, sourceRoot);
+
     if (sourceRoot)
     {
         if (path.indexOf(sourceRoot) !== 0)
@@ -104,7 +114,9 @@ function TakeSource(node)
 
 function getRelativeModuleName(opts)
 {
-    const root = opts.sourceRoot;
+
+    const root =  opts.root || opts.sourceRoot;
+    //console.log("root = ", root)
     if (!root)
     {
         return null;
@@ -112,7 +124,11 @@ function getRelativeModuleName(opts)
     const len = root.length;
     const fullWithExtension = opts.filename.substring(root[len - 1] === nodeJsPath.sep ? len : len + 1);
 
-    return fullWithExtension.substring(0, fullWithExtension.lastIndexOf("."));
+    const result = fullWithExtension.substring(0, fullWithExtension.lastIndexOf("."));
+
+    //console.log("result = ", result)
+
+    return result;
 }
 
 const SOURCE_OPTIONS = {
@@ -122,11 +138,20 @@ const SOURCE_OPTIONS = {
 
 function getRelativeModulePath(path, pluginOpts)
 {
+    //console.log("getRelativeModulePath", path.hub.file.opts)
+
+    if (!path.hub)
+    {
+        return null;
+    }
+
     const module = getRelativeModuleName(path.hub.file.opts);
     if (!module)
     {
         return null;
     }
+
+    //console.log("MOD", module, pluginOpts.sourceRoot);
 
     const relative = strip(module, pluginOpts.sourceRoot);
     if (!relative)
@@ -704,7 +729,7 @@ module.exports = function (babel) {
                 if (findDecorator(decorators, "observable"))
                 {
                     //console.log("OBSERVABLE",   JSON.stringify(kid,0,4), "\n----");
-                    const comments = extractLeadingComments(kid.decorators[0]);
+                    const comments = extractLeadingComments(kid);
                     scope.observables.push({
                         name: kid.key.name,
                         defaultValue: TakeSource(kid.value),
@@ -978,11 +1003,11 @@ module.exports = function (babel) {
     function createScopeDefinitions(relativePath, path, state)
     {
         const scopes = {};
+        const pluginOpts = state.opts;
 
         path.traverse({
             "ClassDeclaration": function (path) {
                 const { node } = path;
-                const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
 
                 if (SCOPE_NAMES.indexOf(node.id.name) >= 0)
