@@ -1,19 +1,19 @@
 import { Process } from "automaton-js";
 
 
-export const EXPORTED_CONSTANT = 123456;
+    export const EXPORTED_CONSTANT = 123456;
 
-export function exportedFn ()
-{
-    
-}
+    export function exportedFn ()
+    {
 
-const CONSTANT = "Quux";
+    }
 
-function extraFn ()
-{
+    const CONSTANT = "Quux";
 
-}
+    function extraFn ()
+    {
+
+    }
 
 export function initProcess(process, scope)
 {

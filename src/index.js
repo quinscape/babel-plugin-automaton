@@ -535,7 +535,7 @@ module.exports = function (babel) {
      * @param node
      * @return {{type: string, constants: Array, root: null}}
      */
-    function createCompositeComponentDefinition(node)
+    function createCompositeComponentDefinition(path, node)
     {
         const classDeclaration = {
             type: "CompositeComponent",
@@ -1108,7 +1108,8 @@ module.exports = function (babel) {
 
     function createNamedQuery(relativePath, path)
     {
-        let namedQuery = null;
+        let namedQuery = {
+        };
 
         path.traverse({
 
@@ -1122,28 +1123,78 @@ module.exports = function (babel) {
                     throw new Error("Default export of query module must be a query() call.")
                 }
 
-                const { arguments } = declaration;
-                if (arguments.length === 0)
+                const { arguments: args } = declaration;
+                if (args.length === 0)
                 {
                     throw new Error("query(query,variables) needs at least a query string parameter");
                 }
 
-                const query = staticEval(arguments[0], false);
-                const variables = arguments.length > 1 ? staticEval(arguments[1], false) : null;
+                const query = staticEval(args[0], false);
+                const variables = args.length > 1 ? staticEval(args[1], false) : null;
 
                 if (query === undefined || variables === undefined)
                 {
                     throw new Error("Query in " + relativePath + " could not be statically evaluated");
                 }
 
-                namedQuery = {
-                    query: query,
-                    variables : variables
-                };
-            }
+                namedQuery.query = query;
+                namedQuery.variables = variables;
+            },
+
         });
 
         return namedQuery;
+    }
+
+
+    function getExtraConstantsForComposite(relativePath, path, moduleName)
+    {
+        //console.log("getExtraConstantsForComposite", moduleName);
+
+        const extraConstants = [];
+
+        path.traverse({
+
+            "VariableDeclaration": function (path, state) {
+                const {node, parent} = path;
+
+                const isExport = t.isExportNamedDeclaration(parent);
+
+                // we are only interested in root declarations or exports
+                if ((!t.isProgram(parent) && !isExport))
+                {
+                    // ignore
+                    return;
+                }
+
+                if (node.declarations[0].id.name === moduleName)
+                {
+                    // ignore composite itself
+                    return;
+                }
+
+                extraConstants.push((isExport ? "export " : "") + TakeSource(node))
+            },
+
+            "FunctionDeclaration": function (path, state) {
+
+                const {node, parent} = path;
+
+
+                const isExport = t.isExportNamedDeclaration(parent);
+
+                // we are only interested in root declarations or exports and we ignore "initProcess"
+                if ((!t.isProgram(parent) && !isExport))
+                {
+                    // ignore
+                    return;
+                }
+
+                extraConstants.push((isExport ? "export " : "") + TakeSource(node))
+            }
+
+        });
+        return extraConstants;
     }
 
 
@@ -1207,7 +1258,7 @@ module.exports = function (babel) {
             },
 
             "VariableDeclaration": function (path, state) {
-                const { node } = path;
+                const { node, parent } = path;
                 const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
 
@@ -1217,7 +1268,7 @@ module.exports = function (babel) {
 
                 if (processName && isComposite && moduleName === node.declarations[0].id.name && isReactArrowFunctionComponent(node.declarations[0].init))
                 {
-                    Data.entry(relativePath, true).composite = createCompositeComponentDefinition(node.declarations[0].init);
+                    Data.entry(relativePath, true).composite = createCompositeComponentDefinition(path, node.declarations[0].init);
                 }
             },
 
@@ -1236,6 +1287,7 @@ module.exports = function (babel) {
                 }
             },
 
+
             "Program": function (path, state) {
                 const { node } = path;
                 const pluginOpts = state.opts;
@@ -1250,6 +1302,11 @@ module.exports = function (babel) {
                 }
 
                 //console.log({ appName, processName, moduleName, isComposite });
+
+                if (isComposite)
+                {
+                    Data.entry(relativePath, true).extraConstants = getExtraConstantsForComposite(relativePath, path, moduleName)
+                }
 
                 if (processName && !isComposite && processName === moduleName)
                 {

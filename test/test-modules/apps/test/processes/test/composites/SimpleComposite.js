@@ -3,6 +3,13 @@ import React from "react"
 
 import { observer as fnObserver } from "mobx-react-lite"
 
+export const EXTRA = 1412, EX2 = 111;
+
+export function test()
+{
+    console.log("test")
+}
+
 const SimpleComposite = props => {
     return (
         <div>

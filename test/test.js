@@ -12,8 +12,6 @@ const OPTIONS = {
     ],
 
     "plugins" : [
-        ["@babel/plugin-proposal-class-properties", { "loose": true }],
-        ["@babel/plugin-proposal-decorators", { "legacy": true }],
             [
                 require("../src/index")(babel),
                 {
@@ -21,6 +19,8 @@ const OPTIONS = {
                     "debug": true
                 }
             ],
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
+        ["@babel/plugin-proposal-decorators", { "legacy": true }]
     ]
 };
 
@@ -76,6 +76,10 @@ describe("Babel Automaton Plugin", function () {
                             }
                         ]
                     }
+                ],
+                "extraConstants": [
+                    "export const EXTRA = 1412, EX2 = 111;",
+                    "export function test() { console.log(\"test\"); }",
                 ],
                 "composite": {
                     "type": "CompositeComponent",
@@ -159,6 +163,7 @@ describe("Babel Automaton Plugin", function () {
                         ]
                     }
                 ],
+                "extraConstants": [],
                 "composite": {
                     "type": "CompositeComponent",
                     "constants": [
@@ -290,6 +295,7 @@ describe("Babel Automaton Plugin", function () {
                         ]
                     }
                 ],
+                "extraConstants": [],
                 "composite": {
                     "type": "CompositeComponent",
                     "constants": [
@@ -420,6 +426,7 @@ describe("Babel Automaton Plugin", function () {
                         ]
                     }
                 ],
+                "extraConstants": [],
                 "composite": {
                     "type": "CompositeComponent",
                     "constants": [],
@@ -735,6 +742,7 @@ describe("Babel Automaton Plugin", function () {
                         ]
                     }
                 ],
+                "extraConstants": [],
                 "composite": {
                     "type": "CompositeComponent",
                     "constants": [
@@ -1002,6 +1010,7 @@ describe("Babel Automaton Plugin", function () {
                         ]
                     }
                 ],
+                "extraConstants": [],
                 "composite": {
                     "type": "CompositeComponent",
                     "constants": [
@@ -1541,6 +1550,7 @@ describe("Babel Automaton Plugin", function () {
                         ]
                     }
                 ],
+                "extraConstants": [],
                 "composite": {
                     "type": "CompositeComponent",
                     "constants": [
