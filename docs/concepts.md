@@ -342,3 +342,53 @@ It can contain four kinds of members:
  
  * General helper methods to use in other locations.
    
+
+## Named Queries
+
+Named Queries are an alternative to using template literal strings and maps directly in the process definition
+
+ ```js
+import {
+    observable,
+    computed,
+    action
+} from "mobx";
+
+import {
+    injection,
+    type
+} from "automaton-js";
+
+import Q_NamedQuery from "./queries/Q_NamedQuery"
+
+export default class TestScope {
+
+    /* Current customers */
+    @observable customers = injection( Q_NamedQuery );
+}
+```
+
+The module ./queries/Q_NamedQuery must provide a static query() method call as default export.
+
+import { query } from "@quinscape/automaton-js"
+
+
+```js
+export default query(
+    // language=GraphQL
+        `
+        query myOtherQuery($id: String!)
+        {
+            myOtherQuery(id: $id)
+            {
+                name
+                value
+            }
+        }`,
+    {
+        "id": "27af1ea6-60d7-423c-849e-d56c1e6983a5"
+    }
+)
+```
+
+The injection mechanism works purely based on the name of the identifier. 

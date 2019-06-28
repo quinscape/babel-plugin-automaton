@@ -605,3 +605,56 @@ name          | description
 name          | name of the helper
 params        | Array of helper arguments
 code          | helper code
+
+## Named Queries
+
+Named queries must be in a "queries" folder either directly in the app root or in one of the processes
+
+    ./apps/myApp/queries/Q_AppLevelQuery.js
+    ./apps/myApp/processes/myProcess/queries/Q_AppLevelQuery.js
+
+A query module 
+
+```js
+export default query(
+    // language=GraphQL
+        `
+        query myOtherQuery($id: String!)
+        {
+            myOtherQuery(id: $id)
+            {
+                name
+                value
+            }
+        }`,
+    {
+        "id": "27af1ea6-60d7-423c-849e-d56c1e6983a5"
+    }
+)
+```
+is extracted as the following JSON
+
+```json
+{
+    "importDeclarations": [
+        {
+            "type": "ImportDeclaration",
+            "source": "@quinscape/automaton-js",
+            "specifiers": [
+                {
+                    "type": "ImportSpecifier",
+                    "name": "query"
+                }
+            ]
+        }
+    ],
+    "query": {
+        "query": "\n        query myOtherQuery($id: String!)\n ...",
+        "variables": {
+            "id": "27af1ea6-60d7-423c-849e-d56c1e6983a5"
+        }
+    }
+}
+```
+
+The `query` property of the export is a static evaluation of the query() method arguments. 
