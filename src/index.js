@@ -21,7 +21,7 @@ const NO_MATCH = {
     isComposite : null
 };
 
-const MODEL_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/(processes\/(.*?)\/(composites\/)?|(domain\/))?(.*?)$/;
+const MODEL_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/(processes\/(.*?)\/(composites\/|queries\/)?|(domain\/)|(queries\/))?(.*?)$/;
 
 function matchPath(path)
 {
@@ -36,9 +36,10 @@ function matchPath(path)
     return {
         appName: m[1],
         processName: m[3],
-        moduleName: m[6],
-        isDomain: m[5],
-        isComposite: !!m[4]
+        moduleName: m[7],
+        isDomain: !!m[5],
+        isComposite: m[4] === "composites/",
+        isQuery: m[4] === "queries/" || !!m[6]
     }
 }
 
@@ -195,6 +196,90 @@ function decapitalize(s)
 module.exports = function (babel) {
 
     const t = babel.types;
+
+    function staticEval(node, allowIdentifier)
+    {
+        var i, out, evaluatedValue;
+
+        if (t.isTemplateLiteral(node))
+        {
+            if (node.expressions.length > 0)
+            {
+                throw new Error("Extracted template literals can't contain expressions");
+            }
+
+            return node.quasis[0].value.raw;
+        }
+        else if (t.isNullLiteral(node))
+        {
+            return null;
+        }
+        else if (t.isLiteral(node))
+        {
+            return node.value;
+        }
+        else if (t.isArrayExpression(node))
+        {
+            var elements = node.elements;
+            out = new Array(elements.length);
+            for (i = 0; i < elements.length; i++)
+            {
+                evaluatedValue = staticEval(elements[i], allowIdentifier);
+
+                if (evaluatedValue !== undefined)
+                {
+                    out[i] = evaluatedValue;
+                }
+                else
+                {
+                    // non-literal array element -> bail
+                    return undefined;
+                }
+            }
+            return out;
+        }
+        else if (t.isObjectExpression(node))
+        {
+            var properties = node.properties;
+            out = {};
+            for (i = 0; i < properties.length; i++)
+            {
+                var key, property = properties[i];
+                if (t.isLiteral(property.key))
+                {
+                    key = property.key.value;
+                }
+                else if (t.isIdentifier(property.key))
+                {
+                    key = property.key.name;
+                }
+                else
+                {
+                    // computed property -> bail
+                    return undefined;
+                }
+
+                evaluatedValue = staticEval(property.value, allowIdentifier);
+
+                if (evaluatedValue !== undefined)
+                {
+                    out[key] = evaluatedValue;
+                }
+                else
+                {
+                    // non-literal value -> bail
+                    return undefined;
+                }
+            }
+            return out;
+        }
+        else if (allowIdentifier && t.isIdentifier(node))
+        {
+            return { __identifier: node.name };
+        }
+
+        return undefined;
+    }
 
     /**
      * Returns true if the given node is an arrow function <code>props => { }</code>
@@ -1020,6 +1105,40 @@ module.exports = function (babel) {
         return scopes;
     }
 
+
+    function createNamedQuery(relativePath, path)
+    {
+        let namedQuery = null;
+
+        path.traverse({
+
+            "ExportDefaultDeclaration" : function (path, state) {
+
+
+                const { declaration } = path.node;
+
+                if (!t.isCallExpression(declaration) || !declaration.callee || declaration.callee.name !== "query")
+                {
+                    throw new Error("Default export of query module must be a query() call.")
+                }
+
+                const { arguments } = declaration;
+                if (arguments.length === 0)
+                {
+                    throw new Error("query(query,variables) needs at least a query string parameter");
+                }
+
+                namedQuery = {
+                    query: staticEval(arguments[0], false),
+                    variables: arguments.length > 1 ? staticEval(arguments[1], false) : null
+                };
+            }
+        });
+
+        return namedQuery;
+    }
+
+
     return {
         visitor: {
             "ImportDeclaration": function (path, state) {
@@ -1114,7 +1233,13 @@ module.exports = function (babel) {
                 const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
 
-                const { appName, processName, moduleName, isComposite, isDomain } = matchPath(relativePath);
+                const { appName, processName, moduleName, isComposite, isDomain, isQuery } = matchPath(relativePath);
+
+
+                if (isQuery)
+                {
+                    Data.entry(relativePath, true).query = createNamedQuery(relativePath, path)
+                }
 
                 //console.log({ appName, processName, moduleName, isComposite });
 

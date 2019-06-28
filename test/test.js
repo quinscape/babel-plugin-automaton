@@ -1499,7 +1499,7 @@ describe("Babel Automaton Plugin", function () {
 
         const data = Data.entry("./apps/test/processes/test/composites/ArrayDestructingConstant");
 
-        console.log(JSON.stringify(data,0, 4))
+        //console.log(JSON.stringify(data,0, 4))
 
         assert.deepEqual(
             data,
@@ -1637,6 +1637,69 @@ describe("Babel Automaton Plugin", function () {
                     }
                 },
                 "export": "fnObserver(ArrayDestructingConstant)"
+            }
+        )
+    });
+
+    it("extracts named queries", function () {
+
+        transform("./test-modules/apps/test/queries/Q_AppQuery.js");
+
+        const data = Data.entry("./apps/test/queries/Q_AppQuery");
+
+        //console.log(JSON.stringify(data,0, 4))
+
+        assert.deepEqual(
+            data,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "@quinscape/automaton-js",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "query"
+                            }
+                        ]
+                    }
+                ],
+                "query": {
+                    "query": "\n        query myQuery($id: String!)\n        {\n            myQuery(id: $id)\n            {\n                name\n                value\n            }\n        }",
+                    "variables": {
+                        "id": "130521f7-bca8-4e4f-a1b6-8a25b4730f01"
+                    }
+                }
+            }
+        )
+
+        transform("./test-modules/apps/test/processes/test/queries/Q_ProcessQuery.js");
+
+        const data2 = Data.entry("./apps/test/processes/test/queries/Q_ProcessQuery");
+
+        //console.log(JSON.stringify(data2,0, 4))
+
+        assert.deepEqual(
+            data2,
+            {
+                "importDeclarations": [
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "@quinscape/automaton-js",
+                        "specifiers": [
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "query"
+                            }
+                        ]
+                    }
+                ],
+                "query": {
+                    "query": "\n        query myOtherQuery($id: String!)\n        {\n            myOtherQuery(id: $id)\n            {\n                name\n                value\n            }\n        }",
+                    "variables": {
+                        "id": "27af1ea6-60d7-423c-849e-d56c1e6983a5"
+                    }
+                }
             }
         )
     });

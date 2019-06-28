@@ -23,7 +23,7 @@
         "power-assert": "^1.6.1"
     },
     "scripts": {
-        "test": "mocha --require babel-register -R spec test/"
+        "test": "mocha  -R spec test/"
     },
     "directories": {
         "test": "test"
