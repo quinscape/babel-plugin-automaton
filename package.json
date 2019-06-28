@@ -1,24 +1,24 @@
 {
     "name": "babel-plugin-automaton",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "description": "Babel plugin to extract JSON model data from ES6+ source code",
     "main": "src/index.js",
     "author": "Sven Helmberger",
     "license": "Apache-2.0",
     "dependencies": {
-        "@babel/runtime": "^7.4.5",
         "@babel/generator": "^7.4.4",
+        "@babel/runtime": "^7.4.5",
         "shelljs": "^0.8.2"
     },
     "devDependencies": {
         "@babel/cli": "^7.4.4",
         "@babel/core": "^7.4.5",
+        "@babel/plugin-proposal-class-properties": "^7.4.4",
+        "@babel/plugin-proposal-decorators": "^7.4.4",
         "@babel/preset-env": "^7.4.5",
         "@babel/preset-react": "^7.0.0",
         "@babel/register": "^7.4.4",
         "babel-plugin-espower": "^3.0.1",
-        "@babel/plugin-proposal-decorators": "^7.4.4",
-        "@babel/plugin-proposal-class-properties": "^7.4.4",
         "mocha": "^6.1.4",
         "power-assert": "^1.6.1"
     },
