@@ -1128,9 +1128,17 @@ module.exports = function (babel) {
                     throw new Error("query(query,variables) needs at least a query string parameter");
                 }
 
+                const query = staticEval(arguments[0], false);
+                const variables = arguments.length > 1 ? staticEval(arguments[1], false) : null;
+
+                if (query === undefined || variables === undefined)
+                {
+                    throw new Error("Query in " + relativePath + " could not be statically evaluated");
+                }
+
                 namedQuery = {
-                    query: staticEval(arguments[0], false),
-                    variables: arguments.length > 1 ? staticEval(arguments[1], false) : null
+                    query: query,
+                    variables : variables
                 };
             }
         });
