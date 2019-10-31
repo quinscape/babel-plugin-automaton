@@ -419,6 +419,12 @@ module.exports = function (babel) {
                             attrs: transform(openingElement.attributes, {
                                 name: TakeName,
                                 value: function (node) {
+
+                                    if (node === null)
+                                    {
+                                        return null;
+                                    }
+
                                     return (
                                         Switch({
                                             "JSXExpressionContainer":

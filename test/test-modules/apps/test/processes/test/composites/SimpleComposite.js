@@ -14,6 +14,7 @@ const SimpleComposite = props => {
     return (
         <div>
             <h1 className="test-class">SimpleComposite</h1>
+            <input disabled/>
         </div>
     )
 }

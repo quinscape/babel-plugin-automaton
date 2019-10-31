@@ -107,6 +107,18 @@ describe("Babel Automaton Plugin", function () {
                                     }
                                 ],
                                 "type": "JSXElement"
+                            },
+                            {
+                                "name": "input",
+                                "attrs": [
+                                    {
+                                        "type": "JSXAttribute",
+                                        "name": "disabled",
+                                        "value": null
+                                    }
+                                ],
+                                "kids": [],
+                                "type": "JSXElement"
                             }
                         ],
                         "type": "JSXElement"
