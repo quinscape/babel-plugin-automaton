@@ -521,7 +521,6 @@ The above results in the following JSON
             "name": "TestScope",
             "observables": [
                 {
-                    "type": "PagedCustomer",
                     "name": "customers",
                     "defaultValue": "injection( // language=GraphQL\n`{\n                getCustomers{\n                    rows{\n                        id\n                        number\n                        salutation\n                        name\n                    }\n                }\n            }`)",
                     "description": "Current customers"
@@ -579,7 +578,6 @@ functions, exported or not.
 name          | description
 --------------|------------  
 name          | name of the @observable
-type          | DomainQL type name
 defaultValue  | code of the default value
 description   | description text
 
