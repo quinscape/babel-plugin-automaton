@@ -8,8 +8,9 @@ import CustomLayout from "../components/CustomLayout"
 
 import {
     injection,
-    type
-} from "automaton-js";
+    type,
+    WorkingSet
+} from "@quinscape/automaton-js";
 
 // noinspection JSUnusedGlobalSymbols
 export function initProcess(process, scope)
@@ -61,6 +62,9 @@ export default class TestScope {
             }`
     );
 
+    /* Working set example */
+    workingSet = new WorkingSet();
+
     @action
     updateCustomers(customers)
     {
@@ -83,6 +87,5 @@ export default class TestScope {
     {
         return foo + 1;
     }
-
 }
 

@@ -540,7 +540,7 @@ describe("Babel Automaton Plugin", function () {
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "automaton-js",
+                        "source": "@quinscape/automaton-js",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
@@ -549,6 +549,10 @@ describe("Babel Automaton Plugin", function () {
                             {
                                 "type": "ImportSpecifier",
                                 "name": "type"
+                            },
+                            {
+                                "type": "ImportSpecifier",
+                                "name": "WorkingSet"
                             }
                         ]
                     }
@@ -625,6 +629,11 @@ describe("Babel Automaton Plugin", function () {
                         ],
                         "helpers": [
                             {
+                                "name": "workingSet",
+                                "defaultValue": "new WorkingSet()",
+                                "description": "Working set example"
+                            },
+                            {
                                 "name": "generalHelper",
                                 "params": [
                                     "foo"
@@ -637,7 +646,6 @@ describe("Babel Automaton Plugin", function () {
                 }
             }
         )
-
     });
 
     it("extracts exported HOC invocations", function () {

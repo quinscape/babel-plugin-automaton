@@ -816,12 +816,20 @@ module.exports = function (babel) {
 
             if (t.isClassProperty(kid))
             {
-
                 if (findDecorator(decorators, "observable"))
                 {
                     //console.log("OBSERVABLE",   JSON.stringify(kid,0,4), "\n----");
                     const comments = extractLeadingComments(kid);
                     scope.observables.push({
+                        name: kid.key.name,
+                        defaultValue: TakeSource(kid.value),
+                        description: comments
+                    })
+                }
+                else
+                {
+                    const comments = extractLeadingComments(kid);
+                    scope.helpers.push({
                         name: kid.key.name,
                         defaultValue: TakeSource(kid.value),
                         description: comments

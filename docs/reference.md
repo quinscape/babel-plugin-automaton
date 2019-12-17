@@ -598,11 +598,24 @@ code          | computer getter code
 
 
 ### helpers
+
+Now exist as either a helper method or a helper property
+
+#### Helper Method
+
 name          | description
 --------------|------------  
 name          | name of the helper
 params        | Array of helper arguments
 code          | helper code
+
+#### Helper Property
+
+name          | description
+--------------|------------  
+name          | name of the helper property
+defaultValue  | code of the default value
+description   | description text
 
 ## Named Queries
 
