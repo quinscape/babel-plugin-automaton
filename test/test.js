@@ -550,7 +550,7 @@ describe("Babel Automaton Plugin", function () {
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "automaton-js",
+                        "source": "@quinscape/automaton-js",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
