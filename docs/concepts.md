@@ -16,6 +16,8 @@ Below src/main/webapp/WEB-INF/automaton:
         └── processes
             ├── customer
             │   ├── composites
+            │   │   └── CustomerForm.json
+            │   ├── states
             │   │   └── CustomerList.json
             │   └── customer.json
             └── shipping
@@ -84,14 +86,11 @@ Regenerates the Javascript sources at `src/main/js/apps/` from the model directo
 Automaton Composite Components are a composite of other React components put together with a limited subset of the 
 ECMA 6+ JavaScript and React component features freely available everywhere else.
 
-The Composite Components are large, organizational components with different stereotypes.
+The Composite Components are large, organizational components that either live standalone in the "composites" folder or
+ass third argument of the view state declaration (See below).
 
- * View -- view component corresponding to a process state
- * Form -- Input-Form for a specific DomainQL type
  
- Other stereotypes might be added later, but they all follow the same composite model format.
- 
- Let's look at composite view in  JavaScript 
+Let's look at a standalone composite component in  JavaScript 
  
  ```js
 import React from "react"
@@ -146,10 +145,10 @@ export default fnObserver(CustomerList)
  
 ```
  
-We import the components and other modules we need for the view. All forms of ES6 imports are supported and mapped to
+We import the components and other modules we need for the component. All forms of ES6 imports are supported and mapped to
 a simplified JSON structure.
 
-The view contains one component that *must* be named the same as the module (without .js).  
+The component contains one component that *must* be named the same as the module (without .js).  
 
 The composite component must be the default export.
 
@@ -162,7 +161,7 @@ The composite component should be a dumb presentational component.
 
 We snapshot all HOC invocations around the default export though so that's another possibility for easy extension.
 
-Each view component will receive the Automaton `env` object as property automatically. For other composites, you might 
+Each view state component will receive the Automaton `env` object as property automatically. For other composites, you might 
 have to use the `useAutomatonEnv` custom Hook provided by NPM "automaton-js".
 
 We support arbitrary preparation/deconstructing of constants at the top of the render method. Since conditional `const` 
@@ -226,60 +225,104 @@ The module can have arbitrary imports and is expected to provide two exports.
 
 import CustomLayout from "../components/CustomLayout"
 
+import CustomerList from "./states/CustomerList";
+
 export function initProcess(process, scope)
 {
-    // process config
-    process.options.layout = CustomLayout;
-    process.generalHelper(12);
+   // process config
+   process.options.layout = CustomLayout;
+   process.generalHelper(12);
 
-    // return process states and transitions
-    return (
-        {
-            startState: "CustomerList",
-            states: {
-                "CustomerList": {
-                    "to-detail":
-                        {
-                            to: "CustomerDetail",
-                            action: scope.addTodo
-                        }
-                },
-                "CustomerDetail": {
-                    "save" : {
-                        to: "CustomerList",
-                        action: t => { process.back() }
-                    },
-                    "cancel" : {
-                        to: "CustomerList"
-                    }
-                }
-            }
-        }
-    );
+   return CustomerList;
 }
 ```
 
 The `initProcess` function (which must be defined with that exact signature above ) can do an initial configuration of 
-process and scope and then returns the process map.
+process and scope and then some optional init code to finally return the start state instance (imported from the states
+folder)
 
-The process map is a multi level map `StateName -> TransitionName -> TransitionObject` (Java equivalent would be 
-`Map<String,Map<String,Transition>>`)
+With the new process v2 structure, the states are defined in their own files below "states" in the process folder.
 
-Each state name must correspond to an existing composite view component in the process /composites/ folder.
+### View States
 
-Each transition name points to a transtion object that can have two properties
+ ```js
+import React from "react";
+import { ViewState } from "@quinscape/automaton-js";
 
- * `to` -- contains the name of target state if that's a fixed state. If the state is chosen dynamically, the property
-   may be missing.
-           
- * `action` -- is either a function expression taking a transition object argument or a direct scope action reference.
-   Can be left out if  the `to` property is set.
-            
+const extra = 1234;
+
+const FooList = new ViewState(
+        "FooList",
+        (process, scope) => ({
+                   "delete":
+                           {
+                              discard: true,
+                              confirmation: ctx => (`Delete ${ctx.name} ?`),
+                              to: FooList,
+                              action: t => scope.addTodo(t.context)
+                           },
+                   "cancel":
+                           {
+                              discard: true,
+                              to: FooList,
+                              action: t => scope.addTodo(t.context)
+                           }
+                }
+        ),
+        props => {
+
+           const { env } = props;
+           const { scope } = env;
+
+           return (
+                   <div>
+                      <h1>FooList</h1>
+                      {
+                         scope.foos.length
+                      }
+                   </div>
+           );
+        }
+);
+
+export default FooList;
+```
+
+Each view state is must return a ViewState instance as default export. 
+
+The first constructor argument is the name of the ViewState instance must match the module name.
+
+#### Transition Map 
+
+The second constructor argument is the transition map function which returns the transition map. (The transition maps
+used to be the second level of the state map structure in the v1 structure.)
+
+The transition map maps transtion names to transition entries `TransitionName -> TransitionObject` (Java equivalent would be
+`Map<String,Transition>`)
+
+Each transition name points to a transition object that can have four properties
+
+* `to` -- now contains an imported view state instance. If the target state is chosen dynamically, the property
+  may be missing.
+
+* `action` -- is either a function expression taking a transition object argument or a direct scope action reference.
+  Can be left out if  the `to` property is set.
+  
+* `discard` -- if set to `true` the transition will discard form errors and continue on. Default is false.
+* `confirmation` -- is an optional arrow function that enables transition confirmations and receives the transition 
+  context object and returns a confirmation message for the user from that context. 
+
+#### View State Component
+
+The third constructor argument defines the component for the state. The arrow function must declare one "props" argument
+and follows the same rules as the composite components and has an identical structure. The component will be automatically
+wrapped in an MobX observer.
+                            
           
 ### Process Scope
 
 The default export of the module must be a mobx decorated process scope definition which can have any name. The process 
-scope defines the basic data-model for the process which is observed by the view components.
+scope defines the basic data-model for the process which is observed by the view state components.
 
  ```js
 import {

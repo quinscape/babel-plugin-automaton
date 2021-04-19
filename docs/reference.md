@@ -395,6 +395,7 @@ import {
 } from "mobx";
 
 import CustomLayout from "../components/CustomLayout"
+import CustomerList from "./states/CustomerList"
 
 import {
     injection,
@@ -405,33 +406,11 @@ import {
 export function initProcess(process, scope)
 {
     // process config
-    process.options.layout = CustomLayout;
+    process.layout = CustomLayout;
     process.generalHelper(12);
 
-    // return process states and transitions
-    return (
-        {
-            startState: "CustomerList",
-            states: {
-                "CustomerList": {
-                    "to-detail":
-                        {
-                            to: "CustomerDetail",
-                            action: scope.addTodo
-                        }
-                },
-                "CustomerDetail": {
-                    "save" : {
-                        to: "CustomerList",
-                        action: t => { process.back() }
-                    },
-                    "cancel" : {
-                        to: "CustomerList"
-                    }
-                }
-            }
-        }
-    );
+    // start with customer list
+    return CustomerList;
 }
 
 export default class TestScope {
@@ -439,7 +418,7 @@ export default class TestScope {
     /* Current customers */
     @observable customers = injection(
         // language=GraphQL
-            `{
+        `{
                 getCustomers{
                     rows{
                         id
@@ -453,6 +432,12 @@ export default class TestScope {
 
     @action
     updateCustomers(customers)
+    {
+        this.customers = customers;
+    }
+
+    @action.bound
+    updateCustomers2(customers)
     {
         this.customers = customers;
     }
@@ -475,48 +460,71 @@ The above results in the following JSON
 
 ```json
 {
-    "importDeclarations": [ "..." ],
-    
+    "importDeclarations": [
+        {
+            "type": "ImportDeclaration",
+            "source": "mobx",
+            "specifiers": [
+                {
+                    "type": "ImportSpecifier",
+                    "name": "observable"
+                },
+                {
+                    "type": "ImportSpecifier",
+                    "name": "computed"
+                },
+                {
+                    "type": "ImportSpecifier",
+                    "name": "action"
+                }
+            ]
+        },
+        {
+            "type": "ImportDeclaration",
+            "source": "../components/CustomLayout",
+            "specifiers": [
+                {
+                    "type": "ImportDefaultSpecifier",
+                    "name": "CustomLayout"
+                }
+            ]
+        },
+        {
+            "type": "ImportDeclaration",
+            "source": "./states/CustomerList",
+            "specifiers": [
+                {
+                    "type": "ImportDefaultSpecifier",
+                    "name": "CustomerList"
+                }
+            ]
+        },
+        {
+            "type": "ImportDeclaration",
+            "source": "automaton-js",
+            "specifiers": [
+                {
+                    "type": "ImportSpecifier",
+                    "name": "injection"
+                },
+                {
+                    "type": "ImportSpecifier",
+                    "name": "type"
+                }
+            ]
+        }
+    ],
     "processExports": {
         "type": "ProcessExports",
-        
         "configuration": [
             "/* process config /*\n",
-            "process.options.layout = CustomLayout",
+            "process.layout = CustomLayout",
             "process.generalHelper(12)"
         ],
-        
-        "process": {
-            "startState": "\"CustomerList\"",
-            "states": {
-                "CustomerList": {
-                    "to-detail": {
-                        "to": "CustomerDetail",
-                        "action": {
-                            "type": "Action",
-                            "params": [],
-                            "code": "scope.addTodo()"
-                        }
-                    }
-                },
-                "CustomerDetail": {
-                    "save": {
-                        "to": "CustomerList",
-                        "action": {
-                            "type": "Action",
-                            "params": [
-                                "t"
-                            ],
-                            "code": "{ process.back(); }"
-                        }
-                    },
-                    "cancel": {
-                        "to": "CustomerList"
-                    }
-                }
-            }
-        },
-        
+        "init": [
+            "// start with customer list\nreturn CustomerList;"
+        ],
+        "startState": "CustomerList",
         "scope": {
             "name": "TestScope",
             "observables": [
@@ -532,7 +540,16 @@ The above results in the following JSON
                     "params": [
                         "customers"
                     ],
-                    "code": "this.customers = customers;"
+                    "code": "this.customers = customers;",
+                    "bound": false
+                },
+                {
+                    "name": "updateCustomers2",
+                    "params": [
+                        "customers"
+                    ],
+                    "code": "this.customers = customers;",
+                    "bound": true
                 }
             ],
             "computeds": [
@@ -562,9 +579,11 @@ It has a `"configuration"` array which contains the code and the comments of all
 (In detail that means that we accept any assignment expression or method call that refers to process or scope including its
 leading comments).
 
-The `"process"` property contains the transformed process map. Each action function is tranformed into an `"Action"` typed
-object with `"name"` property, `"params"` array that contains at most one transition parameter and a `"code"` property
-containing the actual action code.
+The former `"process"` property is gone.
+
+For constant start states, the `"startState"` property contains the name of the startState.
+
+The `"init"` array collects the start state initialization code
 
 The `"startState"` property contains the source of the initial start state, either a static view state name as string literal
 or a transition function expression.
@@ -669,3 +688,229 @@ is extracted as the following JSON
 ```
 
 The `query` property of the export is a static evaluation of the query() method arguments. 
+
+## View States 
+
+The process v2 structure introduces the view states as standalone files
+
+ ```js
+import React from "react";
+import { ViewState } from "@quinscape/automaton-js";
+
+import FooDetail from "./states/FooDetail";
+
+const extra = 1234;
+
+const FooList = new ViewState(
+    "FooList",
+    (process, scope) => ({
+            "delete":
+                {
+                    discard: true,
+                    confirmation: ctx => (`Delete ${ctx.name} ?`),
+                    to: FooList,
+                    action: t => scope.addTodo(t.context)
+                },
+            "cancel":
+                {
+                    discard: true,
+                    to: FooList,
+                    action: t => scope.addTodo(t.context)
+                },
+            "detail":
+                {
+                    to: FooDetail,
+                    action: t => scope.setCurrent(t.context)
+                }
+        }
+    ),
+    props => {
+
+        const { env } = props;
+        const { scope } = env;
+
+        return (
+            <div>
+                <h1>FooList</h1>
+                {
+                    scope.foos.length
+                }
+            </div>
+        );
+    }
+);
+
+export default FooList;
+```
+
+The view state will be transformed into the following JSON
+
+```json
+{
+    "importDeclarations": [
+        {
+            "type": "ImportDeclaration",
+            "source": "react",
+            "specifiers": [
+                {
+                    "type": "ImportDefaultSpecifier",
+                    "name": "React"
+                }
+            ]
+        },
+        {
+            "type": "ImportDeclaration",
+            "source": "@quinscape/automaton-js",
+            "specifiers": [
+                {
+                    "type": "ImportSpecifier",
+                    "name": "ViewState"
+                }
+            ]
+        },
+        {
+            "type": "ImportDeclaration",
+            "source": "./states/FooDetail",
+            "specifiers": [
+                {
+                    "type": "ImportDefaultSpecifier",
+                    "name": "FooDetail"
+                }
+            ]
+        }
+    ],
+    "state": {
+        "type": "ViewState",
+        "name": "FooList",
+        "transitionMap": {
+            "delete": {
+                "discard": true,
+                "confirmation": {
+                    "type": "Action",
+                    "params": [
+                        "ctx"
+                    ],
+                    "code": "`Delete ${ctx.name} ?`"
+                },
+                "to": "FooList",
+                "action": {
+                    "type": "Action",
+                    "params": [
+                        "t"
+                    ],
+                    "code": "scope.addTodo(t.context)"
+                }
+            },
+            "cancel": {
+                "discard": true,
+                "to": "FooList",
+                "action": {
+                    "type": "Action",
+                    "params": [
+                        "t"
+                    ],
+                    "code": "scope.addTodo(t.context)"
+                }
+            },
+            "detail": {
+                "to": "FooDetail",
+                "action": {
+                    "type": "Action",
+                    "params": [
+                        "t"
+                    ],
+                    "code": "scope.setCurrent(t.context)"
+                }
+            }
+        },
+        "composite": {
+            "type": "CompositeComponent",
+            "constants": [
+                {
+                    "type": "VariableDeclaration",
+                    "kind": "const",
+                    "declarations": [
+                        {
+                            "type": "VariableDeclarator",
+                            "id": {
+                                "type": "ObjectPattern",
+                                "properties": [
+                                    {
+                                        "type": "ObjectProperty",
+                                        "key": "env",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "name": "env"
+                                        }
+                                    }
+                                ]
+                            },
+                            "init": "props"
+                        }
+                    ]
+                },
+                {
+                    "type": "VariableDeclaration",
+                    "kind": "const",
+                    "declarations": [
+                        {
+                            "type": "VariableDeclarator",
+                            "id": {
+                                "type": "ObjectPattern",
+                                "properties": [
+                                    {
+                                        "type": "ObjectProperty",
+                                        "key": "scope",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "name": "scope"
+                                        }
+                                    }
+                                ]
+                            },
+                            "init": "env"
+                        }
+                    ]
+                }
+            ],
+            "root": {
+                "name": "div",
+                "attrs": [],
+                "kids": [
+                    {
+                        "name": "h1",
+                        "attrs": [],
+                        "kids": [
+                            {
+                                "type": "JSXText",
+                                "value": "FooList"
+                            }
+                        ],
+                        "type": "JSXElement"
+                    },
+                    {
+                        "type": "JSXExpressionContainer",
+                        "code": "{scope.foos.length}"
+                    }
+                ],
+                "type": "JSXElement"
+            }
+        }
+    },
+    "extraConstants": [
+        "const extra = 1234;"
+    ]
+}
+```
+  
+Besides the common `"importDeclarations""` and `"extraConstants""` properties, the state data contains the `"state""`
+property.
+
+The `"type""` field is always "ViewState" for now.
+
+The `"name""` field contains the state name that must match the module name
+
+The `"transitionMap""` prop contains the transition map for the state, (It matches the second level of the process v1 state map).
+It is always assumed to be an arrow function `(process, scope) => ...` that returns an object expression. 
+
+The to property doesn't change but it is implied to be an *Identifier* name, not a string. The identifier must be matched with an import declaration `import MyState from "./states/MyState"` unless the to property references the viewState itself.
