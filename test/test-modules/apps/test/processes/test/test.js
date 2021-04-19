@@ -5,6 +5,7 @@ import {
 } from "mobx";
 
 import CustomLayout from "../components/CustomLayout"
+import CustomerList from "./states/CustomerList"
 
 import {
     injection,
@@ -19,30 +20,8 @@ export function initProcess(process, scope)
     process.layout = CustomLayout;
     process.generalHelper(12);
 
-    // return process states and transitions
-    return (
-        {
-            startState: "CustomerList",
-            states: {
-                "CustomerList": {
-                    "to-detail":
-                        {
-                            to: "CustomerDetail",
-                            action: scope.addTodo
-                        }
-                },
-                "CustomerDetail": {
-                    "save" : {
-                        to: "CustomerList",
-                        action: t => { process.back() }
-                    },
-                    "cancel" : {
-                        to: "CustomerList"
-                    }
-                }
-            }
-        }
-    );
+    // start with customer list
+    return CustomerList;
 }
 
 export default class TestScope {

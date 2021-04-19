@@ -1,31 +1,23 @@
 import { Process } from "automaton-js";
+import Home from "./states/Home";
 
+export const EXPORTED_CONSTANT = 123456;
 
-    export const EXPORTED_CONSTANT = 123456;
+export function exportedFn ()
+{
 
-    export function exportedFn ()
-    {
+}
 
-    }
+const CONSTANT = "Quux";
 
-    const CONSTANT = "Quux";
+function extraFn ()
+{
 
-    function extraFn ()
-    {
-
-    }
+}
 
 export function initProcess(process, scope)
 {
     // return process states and transitions
-    return (
-        {
-            startState: "Home",
-            states: {
-                "Home": {
-                }
-            }
-        }
-    );
+    return Home
 }
 

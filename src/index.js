@@ -21,7 +21,7 @@ const NO_MATCH = {
     isComposite : null
 };
 
-const MODEL_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/(processes\/(.*?)\/(composites\/|queries\/)?|(domain\/)|(queries\/))?(.*?)$/;
+const MODEL_RESOURCE_REGEX = /^\.\/apps\/(.*?)\/(processes\/(.*?)\/(composites\/|queries\/|states\/)?|(domain\/)|(queries\/))?(.*?)$/;
 
 function matchPath(path)
 {
@@ -39,7 +39,8 @@ function matchPath(path)
         moduleName: m[7],
         isDomain: !!m[5],
         isComposite: m[4] === "composites/",
-        isQuery: m[4] === "queries/" || !!m[6]
+        isQuery: m[4] === "queries/" || !!m[6],
+        isState: m[4] === "states/"
     }
 }
 
@@ -111,6 +112,11 @@ function TakeSource(node)
     //console.log("preprocessed", JSON.stringify(preprocessed,0,4));
 
     return generateSource( preprocessed, SOURCE_OPTIONS).code;
+}
+
+function toSource(node)
+{
+    return generateSource(node, SOURCE_OPTIONS);
 }
 
 function getRelativeModuleName(opts)
@@ -191,6 +197,21 @@ function decapitalize(s)
     return s.charAt(0).toLowerCase() + s.substr(1);
 }
 
+
+function isTransitionMapFunction(node)
+{
+    if (node.type !== "ArrowFunctionExpression")
+    {
+        return false;
+    }
+
+    if (node.params.length !== 2)
+    {
+        return false;
+    }
+
+    return node.body.type === "ObjectExpression";
+}
 
 
 module.exports = function (babel) {
@@ -538,6 +559,7 @@ module.exports = function (babel) {
     /**
      * Handles the view components and form components that are simplified composite react components.
      *
+     * @param path
      * @param node
      * @return {{type: string, constants: Array, root: null}}
      */
@@ -643,11 +665,15 @@ module.exports = function (babel) {
         return undefined;
     }
 
-    function recursiveStateObject(relativePath, node, path)
+    function transitionMapObject(relativePath, node, path)
     {
         if (t.isStringLiteral(node))
         {
             return node.value;
+        }
+        if (t.isIdentifier(node))
+        {
+            return node.name;
         }
         else if (t.isArrowFunctionExpression(node) || t.isFunctionExpression(node))
         {
@@ -671,7 +697,7 @@ module.exports = function (babel) {
             const out = [];
             for (let i = 0; i < elements.length; i++)
             {
-                out[i] = recursiveStateObject(relativePath, elements[i], path.concat(i));
+                out[i] = transitionMapObject(relativePath, elements[i], path.concat(i));
             }
             return out;
         }
@@ -696,13 +722,13 @@ module.exports = function (babel) {
             {
                 const property = properties[i];
                 const name = getNameOrValue(property.key);
-                out[name] = recursiveStateObject(relativePath, property.value, path.concat(name));
+                out[name] = transitionMapObject(relativePath, property.value, path.concat(name));
             }
             return out;
         }
         else
         {
-            throw new Error(relativePath + ", " + path.join(".") + ": Invalid state map object: " + JSON.stringify(node));
+            throw new Error(relativePath + ", " + path.join(".") + ": Invalid transition map object: " + JSON.stringify(node));
         }
     }
 
@@ -731,66 +757,53 @@ module.exports = function (babel) {
         "confirmation" : true
     };
 
-    function validateStateMap(relativePath, stateMap)
+    function validateTransitionMap(relativePath, stateObject)
     {
-        if (!stateMap || typeof stateMap !== "object")
+        if (!stateObject || typeof stateObject !== "object")
         {
-            throw new Error("State map root must be an object");
+            throw new Error("transition map root must be an object");
         }
 
-        for (let stateName in stateMap)
+        for (let transitionName in stateObject)
         {
-            if (stateMap.hasOwnProperty(stateName))
+            if (stateObject.hasOwnProperty(transitionName))
             {
-                const stateObject = stateMap[stateName];
-
-                if (!stateObject || typeof stateObject !== "object")
+                const transitionObject = stateObject[transitionName];
+                if (!transitionObject || typeof transitionObject !== "object")
                 {
-                    throw new Error(relativePath + ", state '" + stateName + "': value must be an object");
+                    throw new Error(relativePath + ", state '" + stateName + "', transition = '" + transitionName + "': value must be an object");
                 }
 
-                for (let transitionName in stateObject)
+                const { to, action, discard, confirmation } = transitionObject;
+
+                const invalidKeys = Object.keys(transitionObject).filter( n => !VALID_TRANSITION_KEYS.hasOwnProperty(n));
+                if (invalidKeys.length > 0)
                 {
-                    if (stateObject.hasOwnProperty(transitionName))
-                    {
-                        const transitionObject = stateObject[transitionName];
-                        if (!transitionObject || typeof transitionObject !== "object")
-                        {
-                            throw new Error(relativePath + ", state '" + stateName + "', transition = '" + transitionName + "': value must be an object");
-                        }
+                    throw new Error(relativePath + ", state '" + stateName + "', Invalid transition key(s): " + invalidKeys.join(","));
+                }
 
-                        const { to, action, discard, confirmation } = transitionObject;
+                if (!to && !action)
+                {
+                    throw new Error(relativePath + ", state '" + stateName + "', transition must have at least a 'to' or an 'action' property");
+                }
 
-                        const invalidKeys = Object.keys(transitionObject).filter( n => !VALID_TRANSITION_KEYS.hasOwnProperty(n));
-                        if (invalidKeys.length > 0)
-                        {
-                            throw new Error(relativePath + ", state '" + stateName + "', Invalid transition key(s): " + invalidKeys.join(","));
-                        }
+                if (action && !isValidAction(action))
+                {
+                    throw new Error(relativePath + ", state '" + stateName + "', Invalid action object: " + action);
+                }
 
-                        if (!to && !action)
-                        {
-                            throw new Error(relativePath + ", state '" + stateName + "', transition must have at least a 'to' or an 'action' property");
-                        }
-
-                        if (action && !isValidAction(action))
-                        {
-                            throw new Error(relativePath + ", state '" + stateName + "', Invalid action object: " + action);
-                        }
-
-                        if (discard !== undefined && discard !== true && discard !== false)
-                        {
-                            throw new Error(relativePath + ", state '" + stateName + "', Invalid discard value: " + discard);
-                        }
-                        if ( confirmation && (typeof confirmation !== "object" || confirmation.type !== "Action"))
-                        {
-                            throw new Error(relativePath + ", state '" + stateName + "', Invalid confirmation value: " + discard);
-                        }
-                    }
+                if (discard !== undefined && discard !== true && discard !== false)
+                {
+                    throw new Error(relativePath + ", state '" + stateName + "', Invalid discard value: " + discard);
+                }
+                if ( confirmation && (typeof confirmation !== "object" || confirmation.type !== "Action"))
+                {
+                    throw new Error(relativePath + ", state '" + stateName + "', Invalid confirmation value: " + discard);
                 }
             }
         }
 
-        return stateMap;
+        return stateObject;
     }
 
     function createDomainDefinition(relativePath, declaration)
@@ -924,7 +937,8 @@ module.exports = function (babel) {
 
             configuration: [],
 
-            process: null,
+            init: [],
+            startState: null,
             scope: null,
 
             extraConstants: []
@@ -949,7 +963,7 @@ module.exports = function (babel) {
 
                     // shallow traversal over initProcess body only
 
-                    const { configuration } = processExports;
+                    const { configuration, init } = processExports;
 
                     let process;
                     const kids = body.body;
@@ -957,41 +971,18 @@ module.exports = function (babel) {
                     {
                         const kid = kids[i];
 
+                        let done = false;
                         if (t.isReturnStatement(kid))
                         {
-                            const map = kid.argument;
+                            const node = kid.argument;
 
-                            if (!t.isObjectExpression(map))
+                            if (node.type === "Identifier")
                             {
-                                throw new Error(relativePath + ": initProcess return value must be an object literal: is " + JSON.stringify(map));
+                                processExports.startState = node.name;
                             }
-
-                            const startState = findMapProperty(map, "startState");
-
-                            if (!t.isStringLiteral(startState) && !t.isArrowFunctionExpression(startState)  && !t.isFunctionExpression(startState))
-                            {
-                                throw new Error(relativePath + ": 'startState' property must be a string literal or function expression");
-                            }
-
-                            const statesNode = findMapProperty(map, "states");
-                            if (!t.isObjectExpression(statesNode))
-                            {
-                                throw new Error(relativePath + ": 'states' property must be an object literal");
-                            }
-
-                            const states =
-                                validateStateMap(
-                                    relativePath,
-                                    recursiveStateObject(relativePath, statesNode, ["states"])
-                                )
-                            ;
-
-                            processExports.process = {
-                                startState: TakeSource(startState),
-                                states: states
-                            };
                         }
-                        else if (t.isExpressionStatement(kid)) {
+                        else if (t.isExpressionStatement(kid))
+                        {
 
                             const { expression } = kid;
                             const comments = extractLeadingComments(kid);
@@ -1014,8 +1005,8 @@ module.exports = function (babel) {
                                     {
                                         configuration.push(code);
                                     }
+                                    done = true;
                                 }
-
                             }
                             else if (t.isCallExpression(expression))
                             {
@@ -1035,8 +1026,14 @@ module.exports = function (babel) {
                                     {
                                         configuration.push(code);
                                     }
+                                    done = true;
                                 }
                             }
+                        }
+                        if (!done)
+                        {
+                            const code = TakeSource(kid);
+                            init.push(code);
                         }
                     }
                 }
@@ -1161,9 +1158,9 @@ module.exports = function (babel) {
     }
 
 
-    function getExtraConstantsForComposite(relativePath, path, moduleName)
+    function getExtraConstants(relativePath, path, moduleName)
     {
-        //console.log("getExtraConstantsForComposite", moduleName);
+        //console.log("getExtraConstants", moduleName);
 
         const extraConstants = [];
 
@@ -1209,6 +1206,86 @@ module.exports = function (babel) {
 
         });
         return extraConstants;
+    }
+
+
+    function createViewStateDefinition(relativePath, path, name, transitionMapFn, componentFn)
+    {
+        const transitionMap =
+            validateTransitionMap(
+                relativePath,
+                transitionMapObject(relativePath, transitionMapFn.body, [""])
+            );
+
+        return {
+            type: "ViewState",
+            name,
+            transitionMap,
+            composite: createCompositeComponentDefinition(path, componentFn)
+        };
+    }
+
+
+    function createStateModel(relativePath, path, moduleName)
+    {
+        // we only support ViewState for now
+        
+        let viewStateModel = null;
+
+        path.traverse({
+
+            "VariableDeclaration" : function (path, state) {
+
+
+                const {parent} = path;
+
+                // we are only interested in root declarations or exports
+                if (!t.isProgram(parent))
+                {
+                    // ignore
+                    return;
+                }
+
+                const { declarations } = path.node;
+
+
+                const declarator = declarations[0];
+
+                if (
+                    declarator.id.name === moduleName &&
+                    declarator.init.type === "NewExpression" &&
+                    declarator.init.callee.name === "ViewState"
+                )
+                {
+                    if (declarator.init.arguments.length !== 3)
+                    {
+                        throw new Error("Wrong view state constructor in " + moduleName);
+                    }
+
+                    const [ nameDecl, transitionMapFn, componentFn ] = declarator.init.arguments;
+
+                    if (nameDecl.type !== "StringLiteral" || nameDecl.value !== moduleName)
+                    {
+                        throw new Error("Error in module " + moduleName + ": view state name must be the same as module name (" + moduleName + "), is " + nameDecl.value);
+                    }
+
+                    if (!isTransitionMapFunction(transitionMapFn))
+                    {
+                        throw new Error("Error in module " + moduleName + ": Invalid transition map function: " + JSON.stringify(transitionMapFn));
+                    }
+
+                    if (!isReactArrowFunctionComponent(componentFn))
+                    {
+                        throw new Error("Error in module " + moduleName + ": view state name must be the same as module name, is " + declarator.init.arguments[0].name);
+                    }
+
+                    viewStateModel = createViewStateDefinition(relativePath, path, moduleName, transitionMapFn, componentFn);
+                }
+            }
+        });
+
+        return viewStateModel;
+
     }
 
 
@@ -1307,7 +1384,7 @@ module.exports = function (babel) {
                 const pluginOpts = state.opts;
                 const relativePath = getRelativeModulePath(path, pluginOpts);
 
-                const { appName, processName, moduleName, isComposite, isDomain, isQuery } = matchPath(relativePath);
+                const { appName, processName, moduleName, isComposite, isDomain, isQuery, isState } = matchPath(relativePath);
 
 
                 if (isQuery)
@@ -1319,7 +1396,7 @@ module.exports = function (babel) {
 
                 if (isComposite)
                 {
-                    Data.entry(relativePath, true).extraConstants = getExtraConstantsForComposite(relativePath, path, moduleName)
+                    Data.entry(relativePath, true).extraConstants = getExtraConstants(relativePath, path, moduleName)
                 }
 
                 if (processName && !isComposite && processName === moduleName)
@@ -1338,6 +1415,12 @@ module.exports = function (babel) {
                 else if (!processName && isDomain)
                 {
                     Data.entry(relativePath, true).domain = createDomainModel(relativePath, path, moduleName)
+                }
+                else if (processName && isState)
+                {
+                    const entry = Data.entry(relativePath, true);
+                    entry.state = createStateModel(relativePath, path, moduleName)
+                    entry.extraConstants = getExtraConstants(relativePath, path, moduleName)
                 }
             }
         }

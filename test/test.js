@@ -540,7 +540,17 @@ describe("Babel Automaton Plugin", function () {
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "@quinscape/automaton-js",
+                        "source": "./states/CustomerList",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "CustomerList"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "automaton-js",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
@@ -564,36 +574,10 @@ describe("Babel Automaton Plugin", function () {
                         "process.layout = CustomLayout",
                         "process.generalHelper(12)"
                     ],
-                    "process": {
-                        "startState": "\"CustomerList\"",
-                        "states": {
-                            "CustomerList": {
-                                "to-detail": {
-                                    "to": "CustomerDetail",
-                                    "action": {
-                                        "type": "Action",
-                                        "params": [],
-                                        "code": "scope.addTodo()"
-                                    }
-                                }
-                            },
-                            "CustomerDetail": {
-                                "save": {
-                                    "to": "CustomerList",
-                                    "action": {
-                                        "type": "Action",
-                                        "params": [
-                                            "t"
-                                        ],
-                                        "code": "{ process.back(); }"
-                                    }
-                                },
-                                "cancel": {
-                                    "to": "CustomerList"
-                                }
-                            }
-                        }
-                    },
+                    "init": [
+                        "// start with customer list\nreturn CustomerList;"
+                    ],
+                    "startState": "CustomerList",
                     "scope": {
                         "name": "TestScope",
                         "observables": [
@@ -1207,11 +1191,11 @@ describe("Babel Automaton Plugin", function () {
         )
     });
 
-    it("extracts start transitions", function () {
+    it("extracts init code", function () {
 
-        transform("./test-modules/apps/test/processes/start-transition/start-transition.js");
+        transform("./test-modules/apps/test/processes/init-code/init-code.js");
 
-        const data = Data.entry("./apps/test/processes/start-transition/start-transition");
+        const data = Data.entry("./apps/test/processes/init-code/init-code");
 
         //console.log(JSON.stringify(data,0, 4))
 
@@ -1228,37 +1212,62 @@ describe("Babel Automaton Plugin", function () {
                                 "name": "Process"
                             }
                         ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "./states/Home",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "Home"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "./states/TargetA",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "TargetA"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "./states/TargetB",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "TargetB"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "./states/TargetC",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "TargetC"
+                            }
+                        ]
                     }
                 ],
                 "processExports": {
                     "type": "ProcessExports",
                     "configuration": [],
-                    "process": {
-                        "startState": "t => { const { target } = process.input; t.target = target && \"Target\" + target.toUpperCase() || \"Home\"; }",
-                        "states": {
-                            "Home": {},
-                            "TargetA": {
-                                "back": {
-                                    "to": "Home"
-                                }
-                            },
-                            "TargetB": {
-                                "back": {
-                                    "to": "Home"
-                                }
-                            },
-                            "TargetC": {
-                                "back": {
-                                    "to": "Home"
-                                }
-                            }
-                        }
-                    },
+                    "init": [
+                        "const { target } = process.input;",
+                        "return target ? targets[target.toUpperCase()] || Home : Home;"
+                    ],
+                    "startState": null,
                     "scope": null,
-                    "extraConstants": []
+                    "extraConstants": [
+                        "const targets = { A: TargetA, B: TargetB, C: TargetC }; /**\n                                                         *\n                                                         * @param {Process} process\n                                                         * @param {object} scope\n                                                         * @return {{startState: string, states: {ProcessTestHome: {\"open-sub\": {to: string, action: (function(*): *)}}}}}\n                                                         */"
+                    ]
                 }
             }
-
         )
     });
 
@@ -1283,17 +1292,25 @@ describe("Babel Automaton Plugin", function () {
                                 "name": "Process"
                             }
                         ]
+                    },
+                    {
+                        "type": "ImportDeclaration",
+                        "source": "./states/Home",
+                        "specifiers": [
+                            {
+                                "type": "ImportDefaultSpecifier",
+                                "name": "Home"
+                            }
+                        ]
                     }
                 ],
                 "processExports": {
                     "type": "ProcessExports",
                     "configuration": [],
-                    "process": {
-                        "startState": "\"Home\"",
-                        "states": {
-                            "Home": {}
-                        }
-                    },
+                    "init": [
+                        "// return process states and transitions\nreturn Home;"
+                    ],
+                    "startState": "Home",
                     "scope": null,
                     "extraConstants": [
                         "export const EXPORTED_CONSTANT = 123456;",
@@ -1302,7 +1319,8 @@ describe("Babel Automaton Plugin", function () {
                         "function extraFn() {}"
                     ]
                 }
-            }        )
+            }
+        )
     });
 
     it("extracts domain models", function () {
@@ -1408,11 +1426,11 @@ describe("Babel Automaton Plugin", function () {
     });
 
 
-    it("supports discard and confirmation on transitions", function () {
+    it("extracts view state models", function () {
 
-        transform("./test-modules/apps/test/processes/transition-control/transition-control.js");
+        transform("./test-modules/apps/test/processes/transition-control/states/FooList.js");
 
-        const data = Data.entry("./apps/test/processes/transition-control/transition-control");
+        const data = Data.entry("./apps/test/processes/transition-control/states/FooList");
 
         //console.log(JSON.stringify(data,0, 4))
 
@@ -1422,100 +1440,136 @@ describe("Babel Automaton Plugin", function () {
                 "importDeclarations": [
                     {
                         "type": "ImportDeclaration",
-                        "source": "mobx",
-                        "specifiers": [
-                            {
-                                "type": "ImportSpecifier",
-                                "name": "observable"
-                            },
-                            {
-                                "type": "ImportSpecifier",
-                                "name": "computed"
-                            },
-                            {
-                                "type": "ImportSpecifier",
-                                "name": "action"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "ImportDeclaration",
-                        "source": "../components/CustomLayout",
+                        "source": "react",
                         "specifiers": [
                             {
                                 "type": "ImportDefaultSpecifier",
-                                "name": "CustomLayout"
+                                "name": "React"
                             }
                         ]
                     },
                     {
                         "type": "ImportDeclaration",
-                        "source": "automaton-js",
+                        "source": "@quinscape/automaton-js",
                         "specifiers": [
                             {
                                 "type": "ImportSpecifier",
-                                "name": "injection"
-                            },
-                            {
-                                "type": "ImportSpecifier",
-                                "name": "type"
+                                "name": "ViewState"
                             }
                         ]
                     }
                 ],
-                "processExports": {
-                    "type": "ProcessExports",
-                    "configuration": [],
-                    "process": {
-                        "startState": "\"FooList\"",
-                        "states": {
-                            "FooList": {
-                                "delete": {
-                                    "discard": true,
-                                    "confirmation": {
-                                        "type": "Action",
-                                        "params": [
-                                            "ctx"
-                                        ],
-                                        "code": "`Delete ${ctx.name} ?`"
-                                    },
-                                    "to": "FooList",
-                                    "action": {
-                                        "type": "Action",
-                                        "params": [],
-                                        "code": "scope.addTodo()"
-                                    }
-                                },
-                                "cancel": {
-                                    "discard": true,
-                                    "to": "FooList",
-                                    "action": {
-                                        "type": "Action",
-                                        "params": [],
-                                        "code": "scope.addTodo()"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "scope": {
-                        "name": "TestScope",
-                        "observables": [],
-                        "actions": [
-                            {
-                                "name": "addToDo",
+                "state": {
+                    "type": "ViewState",
+                    "name": "FooList",
+                    "transitionMap": {
+                        "delete": {
+                            "discard": true,
+                            "confirmation": {
+                                "type": "Action",
                                 "params": [
                                     "ctx"
                                 ],
-                                "code": "",
-                                "bound": false
+                                "code": "`Delete ${ctx.name} ?`"
+                            },
+                            "to": "FooList",
+                            "action": {
+                                "type": "Action",
+                                "params": [
+                                    "t"
+                                ],
+                                "code": "scope.addTodo(t.context)"
+                            }
+                        },
+                        "cancel": {
+                            "discard": true,
+                            "to": "FooList",
+                            "action": {
+                                "type": "Action",
+                                "params": [
+                                    "t"
+                                ],
+                                "code": "scope.addTodo(t.context)"
+                            }
+                        }
+                    },
+                    "composite": {
+                        "type": "CompositeComponent",
+                        "constants": [
+                            {
+                                "type": "VariableDeclaration",
+                                "kind": "const",
+                                "declarations": [
+                                    {
+                                        "type": "VariableDeclarator",
+                                        "id": {
+                                            "type": "ObjectPattern",
+                                            "properties": [
+                                                {
+                                                    "type": "ObjectProperty",
+                                                    "key": "env",
+                                                    "value": {
+                                                        "type": "Identifier",
+                                                        "name": "env"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "init": "props"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "VariableDeclaration",
+                                "kind": "const",
+                                "declarations": [
+                                    {
+                                        "type": "VariableDeclarator",
+                                        "id": {
+                                            "type": "ObjectPattern",
+                                            "properties": [
+                                                {
+                                                    "type": "ObjectProperty",
+                                                    "key": "scope",
+                                                    "value": {
+                                                        "type": "Identifier",
+                                                        "name": "scope"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "init": "env"
+                                    }
+                                ]
                             }
                         ],
-                        "computeds": [],
-                        "helpers": []
-                    },
-                    "extraConstants": []
-                }
+                        "root": {
+                            "name": "div",
+                            "attrs": [],
+                            "kids": [
+                                {
+                                    "name": "h1",
+                                    "attrs": [],
+                                    "kids": [
+                                        {
+                                            "type": "JSXText",
+                                            "value": "FooList"
+                                        }
+                                    ],
+                                    "type": "JSXElement"
+                                },
+                                {
+                                    "type": "JSXExpressionContainer",
+                                    "code": "{scope.foos.length}"
+                                }
+                            ],
+                            "type": "JSXElement"
+                        }
+                    }
+                },
+                "extraConstants": [
+                    "const extra = 1234;"
+                ]
             }
         )
     });
