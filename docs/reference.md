@@ -581,12 +581,9 @@ leading comments).
 
 The former `"process"` property is gone.
 
-For constant start states, the `"startState"` property contains the name of the startState.
+For constant start states, the `"startState"` property contains the name of the startState, otherwise null.
 
-The `"init"` array collects the start state initialization code
-
-The `"startState"` property contains the source of the initial start state, either a static view state name as string literal
-or a transition function expression.
+The `"init"` array collects the actual start state initialization code that is not configuration statements.
 
 The `"scope"` property contains a `"name"` property and four array properties containing the collected member types.
 
