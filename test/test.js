@@ -572,7 +572,8 @@ describe("Babel Automaton Plugin", function () {
                     "configuration": [
                         "/* process config /*\n",
                         "process.layout = CustomLayout",
-                        "process.generalHelper(12)"
+                        "process.generalHelper(12)",
+                        "process.options.forceSubProcess = true"
                     ],
                     "init": [
                         "// start with customer list\nreturn CustomerList;"

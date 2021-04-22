@@ -19,6 +19,7 @@ export function initProcess(process, scope)
     // process config
     process.layout = CustomLayout;
     process.generalHelper(12);
+    process.options.forceSubProcess = true;
 
     // start with customer list
     return CustomerList;

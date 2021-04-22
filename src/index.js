@@ -227,6 +227,22 @@ function isImportedState(path, name)
 }
 
 
+function getFirstMember(memberExpression)
+{
+    let current = memberExpression;
+    while (current.object.type === "MemberExpression")
+    {
+        current = current.object;
+    }
+
+    if (current.object.type === "Identifier")
+    {
+        return current.object.name;
+    }
+    return null;
+}
+
+
 module.exports = function (babel) {
 
     const t = babel.types;
@@ -1008,7 +1024,7 @@ module.exports = function (babel) {
                             {
                                 const { left } = expression;
 
-                                if (t.isMemberExpression(left) && params.indexOf(left.object.name) >= 0)
+                                if (t.isMemberExpression(left) && params.indexOf(getFirstMember(left)) >= 0)
                                 {
                                     const code = TakeSource(expression);
                                     if (comments)
