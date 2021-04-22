@@ -1259,7 +1259,8 @@ describe("Babel Automaton Plugin", function () {
                     "configuration": [],
                     "init": [
                         "const { target } = process.input;",
-                        "return target ? targets[target.toUpperCase()] || Home : Home;"
+                        "const result = target ? targets[target.toUpperCase()] || Home : Home;",
+                        "return result;"
                     ],
                     "startState": null,
                     "scope": null,

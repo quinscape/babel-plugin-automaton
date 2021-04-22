@@ -21,6 +21,7 @@ export function initProcess(process, scope)
 {
     const { target } = process.input;
 
-    return (target ? targets[target.toUpperCase()] || Home : Home);
+    const result = target ? targets[target.toUpperCase()] || Home : Home;
+    return result;
 }
 

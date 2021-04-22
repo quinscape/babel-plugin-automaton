@@ -214,9 +214,23 @@ function isTransitionMapFunction(node)
 }
 
 
+function isImportedState(path, name)
+{
+    const program = path.findParent(path => path.isProgram());
+    return !!program.node.body.find(
+        node =>
+            node.type === "ImportDeclaration" &&
+            node.source.value === "./states/" + name &&
+            node.specifiers.length === 1 && node.specifiers[0].type === "ImportDefaultSpecifier" &&
+            node.specifiers[0].local.name === name
+    )
+}
+
+
 module.exports = function (babel) {
 
     const t = babel.types;
+
 
     function staticEval(node, allowIdentifier)
     {
@@ -930,7 +944,10 @@ module.exports = function (babel) {
 
     }
 
-    function createProcessExports(relativePath, path)
+
+
+
+    function createProcessExports(relativePath, exportsPath)
     {
         const processExports = {
             type: "ProcessExports",
@@ -944,7 +961,7 @@ module.exports = function (babel) {
             extraConstants: []
         };
 
-        path.traverse({
+        exportsPath.traverse({
 
             "ExportNamedDeclaration": function (path, state) {
                 const { node } = path;
@@ -976,7 +993,7 @@ module.exports = function (babel) {
                         {
                             const node = kid.argument;
 
-                            if (node.type === "Identifier")
+                            if (node.type === "Identifier" && isImportedState(path, node.name))
                             {
                                 processExports.startState = node.name;
                             }
