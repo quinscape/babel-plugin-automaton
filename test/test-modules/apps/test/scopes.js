@@ -36,3 +36,25 @@ export class SessionScope
     }
 }
 
+
+export class LocalScope
+{
+    @observable configValue = false;
+
+    @action localScopeAction(f)
+    {
+        this.configValue = f;
+    }
+}
+
+
+export class CommonScope
+{
+    @observable configValue = false;
+
+    @action commonScopeAction(f)
+    {
+        this.configValue = f;
+    }
+}
+

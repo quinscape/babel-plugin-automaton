@@ -1126,7 +1126,9 @@ module.exports = function (babel) {
     const SCOPE_NAMES = [
         "ApplicationScope",
         "UserScope",
-        "SessionScope"
+        "SessionScope",
+        "LocalScope",
+        "CommonScope"
     ];
 
     function createScopeDefinitions(relativePath, path, state)

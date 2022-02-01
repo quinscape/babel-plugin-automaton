@@ -1187,6 +1187,50 @@ describe("Babel Automaton Plugin", function () {
                     ],
                     "computeds": [],
                     "helpers": []
+                },
+                "localScope": {
+                    "name": "LocalScope",
+                    "observables": [
+                        {
+                            "name": "configValue",
+                            "defaultValue": "false",
+                            "description": null
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "name": "localScopeAction",
+                            "params": [
+                                "f"
+                            ],
+                            "code": "this.configValue = f;",
+                            "bound": false
+                        }
+                    ],
+                    "computeds": [],
+                    "helpers": []
+                },
+                "commonScope": {
+                    "name": "CommonScope",
+                    "observables": [
+                        {
+                            "name": "configValue",
+                            "defaultValue": "false",
+                            "description": null
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "name": "commonScopeAction",
+                            "params": [
+                                "f"
+                            ],
+                            "code": "this.configValue = f;",
+                            "bound": false
+                        }
+                    ],
+                    "computeds": [],
+                    "helpers": []
                 }
             }
         )
